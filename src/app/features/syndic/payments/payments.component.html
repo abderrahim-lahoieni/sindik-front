@@ -1,0 +1,140 @@
+<!-- src/app/features/syndic/payments/payments.component.html -->
+
+<div class="syndic-payments">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1>Mes Paiements</h1>
+      <p class="subtitle">Gérez les paiements de vos bâtiments</p>
+    </div>
+
+    <div class="header-actions">
+      <app-button
+        (btnClick)="openCreateModal()"
+        variant="primary"
+        icon="add_card">
+        Nouveau Paiement
+      </app-button>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="stats-section">
+    <div class="stats-grid">
+      
+      <!-- Total Amount -->
+      <div class="stat-card total">
+        <div class="stat-icon">
+          <span class="emoji">💰</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ totalAmount().toLocaleString('fr-FR') }}</div>
+          <div class="stat-label">Total MAD</div>
+        </div>
+      </div>
+
+      <!-- Total Paid -->
+      <div class="stat-card paid">
+        <div class="stat-icon">
+          <span class="emoji">✅</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ totalPaid().toLocaleString('fr-FR') }}</div>
+          <div class="stat-label">Payé MAD</div>
+        </div>
+      </div>
+
+      <!-- Total Pending -->
+      <div class="stat-card pending">
+        <div class="stat-icon">
+          <span class="emoji">⏳</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ totalPending().toLocaleString('fr-FR') }}</div>
+          <div class="stat-label">En attente MAD</div>
+        </div>
+      </div>
+
+      <!-- Overdue Count -->
+      <div class="stat-card overdue">
+        <div class="stat-icon">
+          <span class="emoji">⚠️</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ overdueCount() }}</div>
+          <div class="stat-label">En retard</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Filters Card -->
+  <div class="filters-card">
+    <form [formGroup]="searchForm" class="filters-grid">
+
+      <!-- Building filter -->
+      <div class="filter-group">
+        <label>Bâtiment</label>
+        <select [formControl]="searchForm.controls.buildingUuid" class="filter-select">
+          <option *ngFor="let opt of buildingOptions()" [value]="opt.value">
+            {{ opt.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Type filter -->
+      <div class="filter-group">
+        <label>Type</label>
+        <select [formControl]="searchForm.controls.type" class="filter-select">
+          <option *ngFor="let opt of paymentTypeOptions" [value]="opt.value">
+            {{ opt.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Status filter -->
+      <div class="filter-group">
+        <label>Statut</label>
+        <select [formControl]="searchForm.controls.status" class="filter-select">
+          <option *ngFor="let opt of paymentStatusOptions" [value]="opt.value">
+            {{ opt.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Reset button -->
+      <div class="filter-group filter-actions">
+        <button
+          type="button"
+          class="btn-reset"
+          (click)="searchForm.reset()"
+          [disabled]="!searchForm.dirty">
+          Réinitialiser
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Table -->
+  <div class="table-container">
+    <app-table
+      [columns]="columns"
+      [data]="payments()"
+      [actions]="actions"
+      [showActions]="true"
+      [loading]="loading()"
+      [selectable]="false"
+      [striped]="true"
+      [hoverable]="true"
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      [showPagination]="true"
+      emptyMessage="Aucun paiement trouvé"
+    >
+    </app-table>
+  </div>
+
+</div>

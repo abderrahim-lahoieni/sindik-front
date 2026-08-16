@@ -1,0 +1,316 @@
+// src/app/features/syndic/dashboard/syndic-dashboard.component.scss
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+$primary: #ffc312;
+$primary-hover: #ffcd3a;
+$success: #2ecc71;
+$danger: #ff4757;
+$info: #3498db;
+
+$bg-page: #f8fafc;
+$bg-card: #ffffff;
+$text-dark: #0f172a;
+$text-muted: #64748b;
+$border: #e2e8f0;
+
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+$shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+$transition: all 0.3s ease;
+
+.syndic-dashboard {
+  min-height: 100vh;
+  background: $bg-page;
+  font-family: 'Poppins', sans-serif;
+
+  // ========== HEADER ==========
+  .dashboard-header {
+    background: linear-gradient(135deg, $primary 0%, #ffb400 100%);
+    padding: 3rem 2rem;
+    color: white;
+    border-radius: 0 0 24px 24px;
+    margin-bottom: 2rem;
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem 0;
+      }
+
+      .subtitle {
+        font-size: 1.125rem;
+        opacity: 0.9;
+        margin: 0;
+      }
+    }
+  }
+
+  // ========== LOADING ==========
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid $border;
+      border-top-color: $primary;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    p {
+      margin-top: 1.5rem;
+      color: $text-muted;
+      font-size: 1.125rem;
+    }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  // ========== EMPTY STATE ==========
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    max-width: 500px;
+    margin: 0 auto;
+
+    .empty-icon {
+      font-size: 5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      font-size: 1.875rem;
+      font-weight: 600;
+      color: $text-dark;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.125rem;
+      color: $text-muted;
+      line-height: 1.6;
+    }
+  }
+
+  // ========== DASHBOARD CONTENT ==========
+  .dashboard-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem 2rem;
+  }
+
+  // ========== GLOBAL STATS ==========
+  .global-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+
+    .stat-card {
+      background: $bg-card;
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: $shadow-sm;
+      border: 2px solid transparent;
+      transition: $transition;
+      position: relative;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: $shadow-md;
+        border-color: $primary;
+      }
+
+      .stat-icon {
+        font-size: 3rem;
+        min-width: 60px;
+        text-align: center;
+      }
+
+      .stat-content {
+        flex: 1;
+
+        .stat-value {
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: $primary;
+          line-height: 1;
+          margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: $text-muted;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+
+      app-button {
+        position: absolute;
+        bottom: 0.5rem;
+        right: 0.5rem;
+      }
+    }
+  }
+
+  // ========== SECTION HEADER ==========
+  .section-header {
+    margin-bottom: 1.5rem;
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: $text-dark;
+      margin: 0;
+      padding-bottom: 0.75rem;
+      border-bottom: 3px solid $primary;
+      display: inline-block;
+    }
+  }
+
+  // ========== BUILDINGS GRID ==========
+  .buildings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+
+    .building-card {
+      background: $bg-card;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: $shadow-sm;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: $transition;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: $shadow-lg;
+        border-color: $primary;
+
+        .building-header .building-icon {
+          transform: scale(1.1);
+        }
+      }
+
+      .building-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+
+        .building-info {
+          flex: 1 1 auto;   // autorise l'expansion
+          min-width: 0;     // OBLIGATOIRE en flexbox
+          width: 100%;
+        }
+
+        .building-icon {
+          font-size: 2.5rem;
+          flex-shrink: 0;   // empêche l’icône d’écraser le texte
+        }
+      }
+      .building-info h3,
+      .building-info .residence-badge {
+        white-space: normal;
+      }
+      .building-stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+
+        .mini-stat {
+          text-align: center;
+
+          .mini-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: $primary;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+          }
+
+          .mini-stat-label {
+            font-size: 0.75rem;
+            color: $text-muted;
+            font-weight: 500;
+          }
+        }
+      }
+
+      .building-progress {
+        margin-bottom: 1rem;
+
+        .progress-bar {
+          height: 8px;
+          background: $border;
+          border-radius: 4px;
+          overflow: hidden;
+          margin-bottom: 0.5rem;
+
+          .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, $primary 0%, $success 100%);
+            transition: width 0.6s ease;
+          }
+        }
+
+        .progress-text {
+          font-size: 0.875rem;
+          color: $text-muted;
+          font-weight: 500;
+        }
+      }
+
+      .building-actions {
+        display: flex;
+        gap: 0.75rem;
+      }
+    }
+  }
+
+  // ========== RESPONSIVE ==========
+  @media (max-width: 768px) {
+    .dashboard-header {
+      padding: 2rem 1rem;
+
+      .header-content h1 {
+        font-size: 1.875rem;
+      }
+
+      .header-content .subtitle {
+        font-size: 1rem;
+      }
+    }
+
+    .dashboard-content {
+      padding: 0 1rem 1rem;
+    }
+
+    .global-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .buildings-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

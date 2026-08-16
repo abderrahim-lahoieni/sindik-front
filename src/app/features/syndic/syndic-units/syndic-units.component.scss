@@ -1,0 +1,293 @@
+// src/app/features/syndic/units/syndic-units.component.scss
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+$primary: #ffc312;
+$primary-hover: #ffcd3a;
+$success: #2ecc71;
+$danger: #ff4757;
+$warning: #f39c12;
+
+$bg-page: #f8fafc;
+$bg-card: #ffffff;
+$text-dark: #0f172a;
+$text-muted: #64748b;
+$border: #e2e8f0;
+
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+$transition: all 0.3s ease;
+
+.syndic-units {
+  padding: 24px;
+  background: $bg-page;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+
+  // ========== PAGE HEADER ==========
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 3px solid $primary;
+
+    .header-left {
+      h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: $text-dark;
+        margin: 0 0 8px 0;
+        background: linear-gradient(135deg, $primary 0%, #ffb400 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .subtitle {
+        color: $text-muted;
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 500;
+      }
+    }
+  }
+
+  // ========== STATS ROW ==========
+  .stats-row {
+    margin-bottom: 24px;
+
+    .stat-card {
+      background: linear-gradient(135deg, $bg-card 0%, #fafafa 100%);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: $shadow-sm;
+      border: 2px solid transparent;
+      transition: $transition;
+      position: relative;
+      overflow: hidden;
+      max-width: 300px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, $primary 0%, #ffb400 100%);
+      }
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: $shadow-md;
+        border-color: rgba($primary, 0.3);
+
+        .stat-icon {
+          transform: scale(1.1) rotate(5deg);
+        }
+      }
+
+      .stat-icon {
+        font-size: 48px;
+        transition: $transition;
+      }
+
+      .stat-content {
+        flex: 1;
+
+        .stat-value {
+          font-size: 2rem;
+          font-weight: 700;
+          color: $primary;
+          line-height: 1;
+          margin-bottom: 6px;
+        }
+
+        .stat-label {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: $text-muted;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+    }
+  }
+
+  // ========== FILTERS CARD ==========
+  .filters-card {
+    background: $bg-card;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: $shadow-sm;
+    border: 2px solid $border;
+    margin-bottom: 24px;
+    transition: $transition;
+
+    &:hover {
+      border-color: rgba($primary, 0.3);
+      box-shadow: $shadow-md;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr) auto;
+      gap: 16px;
+      align-items: flex-end;
+    }
+
+    .filter-group {
+      label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: $text-dark;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .filter-select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 2px solid $border;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        background: white;
+        color: $text-dark;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        transition: $transition;
+
+        &:focus {
+          outline: none;
+          border-color: $primary;
+          box-shadow: 0 0 0 4px rgba($primary, 0.1);
+        }
+
+        &:hover {
+          border-color: darken($border, 10%);
+          background: #fafafa;
+        }
+      }
+
+      &.filter-actions {
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+      }
+
+      .btn-reset {
+        padding: 12px 24px;
+        border: 2px solid $border;
+        border-radius: 10px;
+        background: white;
+        color: $text-muted;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: $transition;
+        font-family: 'Poppins', sans-serif;
+
+        &:hover:not(:disabled) {
+          border-color: $primary;
+          color: $primary;
+          background: rgba($primary, 0.05);
+          transform: translateY(-2px);
+        }
+
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  // ========== TABLE CONTAINER ==========
+  .table-container {
+    background: $bg-card;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: $shadow-sm;
+    border: 2px solid $border;
+    transition: $transition;
+
+    &:hover {
+      box-shadow: $shadow-md;
+    }
+  }
+
+  // ========== BADGES ==========
+  ::ng-deep {
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+
+      &-building {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        color: #1e40af;
+        border: 1px solid #3b82f6;
+      }
+
+      &-type {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        color: #92400e;
+        border: 1px solid #f59e0b;
+      }
+
+      &-success {
+        background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+        color: #16a34a;
+        border: 1px solid #22c55e;
+      }
+
+      &-danger {
+        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+        color: #dc2626;
+        border: 1px solid #ef4444;
+      }
+    }
+  }
+
+  // ========== RESPONSIVE ==========
+  @media (max-width: 1400px) {
+    .filters-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+
+      .filter-group:last-child {
+        grid-column: span 2;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 16px;
+
+    .page-header {
+      .header-left h1 {
+        font-size: 1.5rem;
+      }
+    }
+
+    .filters-grid {
+      grid-template-columns: 1fr !important;
+
+      .filter-group {
+        grid-column: span 1 !important;
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+<!-- src/app/features/admin/users/user.component.html -->
+
+<div class="user-management">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1>Gestion des utilisateurs</h1>
+      <p class="subtitle">Administrez les utilisateurs de la plateforme</p>
+    </div>
+
+    <div class="header-actions">
+      <app-button *ngIf="isAdmin()" (btnClick)="openCreateModal()" variant="primary" icon="person_add">
+        Ajouter Nouvel utilisateur
+      </app-button>
+    </div>
+  </div>
+
+  <!-- Stats & Filters Row -->
+  <div class="top-row">
+
+    <!-- Stats Card -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon total">
+          <span class="emoji">👥</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ users().length }}</div>
+          <div class="stat-label">Total utilisateurs</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="filters-card">
+      <form [formGroup]="searchForm" class="filters-grid">
+
+        <!-- Role filter -->
+        <div class="filter-group">
+          <label>Rôle</label>
+          <select [formControl]="searchForm.controls.role" class="filter-select">
+            <option *ngFor="let opt of roleOptions" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Status filter -->
+        <div class="filter-group">
+          <label>Statut</label>
+          <select [formControl]="searchForm.controls.status" class="filter-select">
+            <option *ngFor="let opt of statusOptions" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Reset button -->
+        <div class="filter-group filter-actions">
+          <button
+            type="button"
+            class="btn-reset"
+            (click)="searchForm.reset()"
+            [disabled]="!searchForm.dirty">
+            Réinitialiser
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Table -->
+  <div class="table-container">
+    <app-table
+      [columns]="columns"
+      [data]="users()"
+      [actions]="actions"
+      [showActions]="isAdmin()"
+      [loading]="loading()"
+      [selectable]="isAdmin()"
+      [striped]="true"
+      [hoverable]="true"
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      [showPagination]="true"
+      emptyMessage="Aucun utilisateur trouvé"
+      (selectionChange)="onSelectionChange($event)"
+    >
+    </app-table>
+  </div>
+
+</div>

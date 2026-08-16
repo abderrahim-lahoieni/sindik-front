@@ -1,0 +1,16 @@
+
+
+/* 2. Supprime le fond de la surface Material */
+.transparent-snackbar .mdc-snackbar__surface,
+.transparent-snackbar .mat-mdc-snack-bar-surface {
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 4. Supprime le padding du label Material */
+.transparent-snackbar .mdc-snackbar__label {
+  padding: 0 !important;
+}

@@ -1,0 +1,249 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+// Variables
+$primary: #ffc312;
+$primary-hover: #ffcd3a;
+$secondary: #2c3e50;
+$success: #2ecc71;
+$danger: #ff4757;
+$warning: #f39c12;
+$white: #ffffff;
+$black: #000000;
+$transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+.app-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: $transition;
+  outline: none;
+  white-space: nowrap;
+  overflow: hidden;
+
+  &:focus-visible {
+    outline: 2px solid $primary;
+    outline-offset: 2px;
+  }
+
+  // Sizes
+  &.size-small {
+    height: 32px;
+    padding: 0 12px;
+    font-size: 13px;
+
+    .button-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  &.size-medium {
+    height: 40px;
+    padding: 0 16px;
+    font-size: 14px;
+
+    .button-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &.size-large {
+    height: 48px;
+    padding: 0 24px;
+    font-size: 16px;
+
+    .button-icon {
+      font-size: 22px;
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  // Full Width
+  &.full-width {
+    width: 100%;
+  }
+
+  // Icons
+  .button-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.icon-left {
+      margin-right: -4px;
+    }
+
+    &.icon-right {
+      margin-left: -4px;
+    }
+  }
+
+  // Loading Spinner
+  .button-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+
+    ::ng-deep .mat-mdc-progress-spinner {
+      --mdc-circular-progress-active-indicator-color: currentColor;
+    }
+  }
+
+  .button-content {
+    display: flex;
+    align-items: center;
+  }
+
+  // ==================== VARIANTS ====================
+
+  // PRIMARY
+  &.variant-primary {
+    background: $primary;
+    color: $black;
+    box-shadow: 0 2px 4px rgba(255, 195, 18, 0.2);
+
+    &:hover:not(.disabled):not(.loading) {
+      background: $primary-hover;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(255, 195, 18, 0.3);
+    }
+
+    &:active:not(.disabled):not(.loading) {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(255, 195, 18, 0.2);
+    }
+  }
+
+  // SECONDARY
+  &.variant-secondary {
+    background: transparent;
+    color: $primary;
+    border: 2px solid $primary;
+
+    &:hover:not(.disabled):not(.loading) {
+      background: rgba(255, 195, 18, 0.1);
+      border-color: $primary-hover;
+      color: $primary-hover;
+    }
+
+    &:active:not(.disabled):not(.loading) {
+      background: rgba(255, 195, 18, 0.2);
+    }
+  }
+
+  // SUCCESS
+  &.variant-success {
+    background: $success;
+    color: $white;
+    box-shadow: 0 2px 4px rgba(46, 204, 113, 0.2);
+
+    &:hover:not(.disabled):not(.loading) {
+      background: darken($success, 8%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(46, 204, 113, 0.3);
+    }
+
+    &:active:not(.disabled):not(.loading) {
+      transform: translateY(0);
+      background: darken($success, 12%);
+    }
+  }
+
+  // DANGER
+  &.variant-danger {
+    background: $danger;
+    color: $white;
+    box-shadow: 0 2px 4px rgba(255, 71, 87, 0.2);
+
+    &:hover:not(.disabled):not(.loading) {
+      background: darken($danger, 8%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(255, 71, 87, 0.3);
+    }
+
+    &:active:not(.disabled):not(.loading) {
+      transform: translateY(0);
+      background: darken($danger, 12%);
+    }
+  }
+
+  // WARNING
+  &.variant-warning {
+    background: $warning;
+    color: $white;
+    box-shadow: 0 2px 4px rgba(243, 156, 18, 0.2);
+
+    &:hover:not(.disabled):not(.loading) {
+      background: darken($warning, 8%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(243, 156, 18, 0.3);
+    }
+
+    &:active:not(.disabled):not(.loading) {
+      transform: translateY(0);
+      background: darken($warning, 12%);
+    }
+  }
+
+  // GHOST
+  &.variant-ghost {
+    background: transparent;
+    color: $secondary;
+
+    &:hover:not(.disabled):not(.loading) {
+      background: rgba(255, 195, 18, 0.1);
+      color: $primary;
+    }
+
+    &:active:not(.disabled):not(.loading) {
+      background: rgba(255, 195, 18, 0.15);
+    }
+  }
+
+  // ==================== STATES ====================
+
+  // Disabled
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // Loading
+  &.loading {
+    cursor: wait;
+    pointer-events: none;
+
+    .button-content {
+      opacity: 0.7;
+    }
+  }
+}
+
+// Icon-only Button
+.app-button.icon-only {
+  width: 40px;
+  padding: 0;
+
+  &.size-small {
+    width: 32px;
+    height: 32px;
+  }
+
+  &.size-large {
+    width: 48px;
+    height: 48px;
+  }
+}

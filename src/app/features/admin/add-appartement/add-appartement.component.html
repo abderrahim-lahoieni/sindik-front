@@ -1,0 +1,85 @@
+<div class="dashboard">
+    <div class="card">
+      <h2>Ajouter un Appartement</h2>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nom</mat-label>
+          <mat-icon matPrefix>apartment</mat-icon>
+          <input matInput formControlName="nom" placeholder="Nom de l'appartement" />
+          <mat-error *ngIf="form.get('nom')?.hasError('required')">Nom requis</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Étage</mat-label>
+          <mat-icon matPrefix>stairs</mat-icon>
+          <input matInput type="number" formControlName="etage" placeholder="Étage" />
+          <mat-error *ngIf="form.get('etage')?.hasError('required')">Étage requis</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre de chambres</mat-label>
+          <mat-icon matPrefix>bed</mat-icon>
+          <input matInput type="number" formControlName="chambres" placeholder="Chambres" />
+          <mat-error *ngIf="form.get('chambres')?.hasError('required')">Nombre de chambres requis</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Propriétaire</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
+          <input matInput formControlName="proprietaire" placeholder="Nom du propriétaire" />
+          <mat-error *ngIf="form.get('proprietaire')?.hasError('required')">Propriétaire requis</mat-error>
+        </mat-form-field>
+
+        <div class="buttons">
+          <app-button
+            variant="primary"
+            size="medium"
+            [loading]="loading()"
+            type="submit"
+            [disabled]="form.invalid"
+            (btnClick)="submit()"
+          >
+            Ajouter
+          </app-button>
+          <app-button
+            variant="secondary"
+            size="medium"
+            type="button"
+            (btnClick)="cancel()"
+          >
+            Annuler
+          </app-button>
+        </div>
+        <div style="max-width: 420px; margin: 40px auto; display: grid; gap: 24px;">
+
+          <!-- TEXT INPUT -->
+          <app-input
+            label="Nom"
+            placeholder="Votre nom"
+            icon="person"
+            [required]="true"
+            [maxLength]="20"
+          ></app-input>
+
+          <!-- EMAIL INPUT -->
+          <app-input
+            label="Email"
+            placeholder="email@exemple.com"
+            type="email"
+            icon="mail"
+            [required]="true"
+          ></app-input>
+
+          <!-- PASSWORD INPUT -->
+          <app-input
+            label="Mot de passe"
+            type="password"
+            icon="lock"
+            [required]="true"
+          ></app-input>
+
+        </div>
+
+      </form>
+    </div>
+</div>

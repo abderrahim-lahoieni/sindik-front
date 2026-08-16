@@ -1,0 +1,382 @@
+// src/app/features/syndic/contracts/pages/view-contract-page.component.scss
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+// ── Variables ──────────────────────────────────────────────────────────────────
+$primary:    #ffc312;
+$success:    #2ecc71;
+$danger:     #ff4757;
+$warning:    #f39c12;
+$info:       #3498db;
+
+$bg-page:    #f8fafc;
+$bg-card:    #ffffff;
+$text-dark:  #0f172a;
+$text-muted: #64748b;
+$border:     #e2e8f0;
+
+$shadow-sm:  0 1px 3px rgba(0,0,0,.05);
+$shadow-md:  0 4px 12px rgba(0,0,0,.12);
+$transition: all .3s ease;
+
+// ── Root ───────────────────────────────────────────────────────────────────────
+.view-contract-page {
+  min-height: 100vh;
+  background: $bg-page;
+  font-family: 'Poppins', sans-serif;
+  padding-bottom: 3rem;
+
+  // ── PAGE HEADER ─────────────────────────────────────────────────────────────
+  .page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 2rem 3rem;
+    box-shadow: $shadow-md;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -10%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(255,255,255,.1) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      position: relative;
+      z-index: 1;
+
+      .btn-back {
+        width: 48px; height: 48px;
+        border-radius: 12px;
+        background: rgba(255,255,255,.2);
+        border: 2px solid rgba(255,255,255,.3);
+        color: white;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        transition: $transition;
+        backdrop-filter: blur(10px);
+        flex-shrink: 0;
+
+        &:hover { background: rgba(255,255,255,.3); transform: translateX(-4px); }
+        .material-icons { font-size: 24px; }
+      }
+
+      .header-text {
+        flex: 1;
+        h1 {
+          font-size: 2rem; font-weight: 700;
+          color: white; margin: 0 0 .5rem;
+          text-shadow: 0 2px 10px rgba(0,0,0,.1);
+        }
+        .subtitle { font-size: 1rem; color: rgba(255,255,255,.9); margin: 0; font-weight: 500; }
+      }
+
+      .header-actions {
+        display: flex; gap: .75rem;
+
+        .btn-action {
+          display: flex; align-items: center; gap: .5rem;
+          padding: .75rem 1.25rem;
+          border-radius: 12px;
+          border: 2px solid rgba(255,255,255,.3);
+          background: rgba(255,255,255,.2);
+          color: white;
+          font-size: .875rem; font-weight: 600;
+          cursor: pointer;
+          transition: $transition;
+          backdrop-filter: blur(10px);
+          font-family: 'Poppins', sans-serif;
+
+          &:hover:not(:disabled) {
+            background: rgba(255,255,255,.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,.2);
+          }
+          &:disabled { opacity: .5; cursor: not-allowed; }
+          .material-icons { font-size: 20px; }
+          .btn-text { display: none; }
+
+          // Aperçu PDF
+          &.btn-preview {
+            border-color: rgba($info, .5);
+            background: rgba($info, .2);
+            &:hover:not(:disabled) { background: rgba($info, .4); }
+          }
+
+          // Retour détails (quand aperçu actif)
+          &.btn-details {
+            border-color: rgba($success, .5);
+            background: rgba($success, .2);
+            &:hover:not(:disabled) { background: rgba($success, .4); }
+          }
+
+          &.btn-download {
+            border-color: rgba(46,204,113,.5);
+            background: rgba(46,204,113,.2);
+            &:hover:not(:disabled) { background: rgba(46,204,113,.4); }
+          }
+
+          &.btn-edit {
+            border-color: rgba($primary,.5);
+            background: rgba($primary,.2);
+            &:hover:not(:disabled) { background: rgba($primary,.4); }
+          }
+        }
+      }
+    }
+  }
+
+  // ── LOADING ─────────────────────────────────────────────────────────────────
+  .loading-container {
+    max-width: 1200px;
+    margin: 4rem auto;
+    text-align: center;
+    padding: 4rem 2rem;
+
+    p { font-size: 1.125rem; color: $text-muted; font-weight: 500; }
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .spinner {
+    width: 60px; height: 60px;
+    border: 4px solid $border;
+    border-top-color: $primary;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1.5rem;
+  }
+
+  // ── CONTENT AREA ─────────────────────────────────────────────────────────────
+  // Enveloppe commune aux deux vues (détails et PDF)
+  .content-area {
+    max-width: 1200px;
+    margin: -2rem auto 0;
+    padding: 0 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  // ── INFO SECTIONS (vue détails) ───────────────────────────────────────────────
+  .info-section {
+    background: $bg-card;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: $shadow-sm;
+    border: 2px solid $border;
+    transition: $transition;
+
+    &:hover {
+      box-shadow: $shadow-md;
+      border-color: rgba($primary,.3);
+    }
+
+    .section-title {
+      display: flex; align-items: center; gap: .75rem;
+      font-size: 1.25rem; font-weight: 700;
+      color: $text-dark;
+      margin: 0 0 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid $border;
+
+      .material-icons { font-size: 28px; color: $primary; }
+    }
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+
+    .info-item {
+      display: flex; flex-direction: column; gap: .5rem;
+
+      .label {
+        font-size: .75rem; font-weight: 600;
+        color: $text-muted;
+        text-transform: uppercase; letter-spacing: .5px;
+      }
+
+      .value {
+        font-size: 1rem; font-weight: 600; color: $text-dark;
+
+        &.badge {
+          display: inline-block;
+          padding: .5rem 1rem;
+          border-radius: 20px;
+          font-size: .875rem;
+          width: fit-content;
+        }
+      }
+    }
+  }
+
+  .parties-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+
+    .party-card {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border: 2px solid #bae6fd;
+      border-radius: 12px;
+      padding: 1.5rem;
+
+      h3 {
+        font-size: .875rem; font-weight: 700;
+        color: #0c4a6e;
+        text-transform: uppercase; letter-spacing: .5px;
+        margin: 0 0 .75rem;
+      }
+      .party-name { font-size: 1.125rem; font-weight: 700; color: #075985; margin: 0; }
+    }
+  }
+
+  .financial-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.25rem;
+
+    .financial-card {
+      background: linear-gradient(135deg, #fafafa 0%, #fff 100%);
+      border: 2px solid $border;
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex; flex-direction: column; gap: .5rem;
+      transition: $transition;
+
+      &:hover { transform: translateY(-4px); box-shadow: $shadow-md; border-color: rgba($primary,.3); }
+
+      &.primary {
+        background: linear-gradient(135deg, #fff9e6 0%, #fff4cc 100%);
+        border-color: $primary;
+        .financial-value { color: #d97706; font-size: 1.75rem; }
+      }
+
+      .financial-label {
+        font-size: .75rem; font-weight: 600;
+        color: $text-muted;
+        text-transform: uppercase; letter-spacing: .5px;
+      }
+      .financial-value { font-size: 1.5rem; font-weight: 700; color: $text-dark; }
+      .financial-status { font-size: .875rem; font-weight: 600; color: $success; margin-top: .25rem; }
+    }
+  }
+
+  .terms-box,
+  .notes-box {
+    background: $bg-page;
+    border: 2px solid $border;
+    border-radius: 12px;
+    padding: 1.5rem;
+    p { font-size: .9375rem; line-height: 1.7; color: $text-dark; margin: 0; white-space: pre-wrap; }
+  }
+
+  .notes-box {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-color: #fbbf24;
+    p { color: #78350f; font-style: italic; }
+  }
+
+  // ── VUE APERÇU PDF (remplace les détails dans la même zone) ──────────────────
+  .pdf-view {
+    background: $bg-card;
+    border-radius: 16px;
+    border: 2px solid $border;
+    box-shadow: $shadow-md;
+    overflow: hidden;
+
+    // Prend toute la hauteur viewport disponible (minus header + marges)
+    height: calc(100vh - 220px);
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+
+    // ── Loading dans la vue PDF ──
+    .pdf-loading {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 14px;
+
+      .spinner {
+        border-color: rgba(255,255,255,.3);
+        border-top-color: white;
+        width: 48px; height: 48px;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        color: rgba(255,255,255,.9);
+        font-size: 1rem; font-weight: 500;
+        margin: 0;
+      }
+    }
+
+    // ── Iframe PDF ──
+    .pdf-iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: #525659;
+    }
+  }
+
+  // ── BADGES ───────────────────────────────────────────────────────────────────
+  .badge {
+    &-type       { background: linear-gradient(135deg,#e0e7ff,#c7d2fe); color: #3730a3; border: 1px solid #6366f1; }
+    &-draft      { background: linear-gradient(135deg,#f1f5f9,#e2e8f0); color: #475569; border: 1px solid #94a3b8; }
+    &-active     { background: linear-gradient(135deg,#d1fae5,#a7f3d0); color: #065f46; border: 1px solid #10b981; }
+    &-pending    { background: linear-gradient(135deg,#fef3c7,#fde68a); color: #92400e; border: 1px solid #f59e0b; }
+    &-expired    { background: linear-gradient(135deg,#fee2e2,#fecaca); color: #dc2626; border: 1px solid #ef4444; }
+    &-terminated { background: linear-gradient(135deg,#ddd6fe,#c4b5fd); color: #5b21b6; border: 1px solid #8b5cf6; }
+    &-renewed    { background: linear-gradient(135deg,#dbeafe,#bfdbfe); color: #1e40af; border: 1px solid #3b82f6; }
+  }
+
+  // ── RESPONSIVE ───────────────────────────────────────────────────────────────
+  @media (min-width: 768px) {
+    .header-actions .btn-action .btn-text { display: inline !important; }
+  }
+
+  @media (max-width: 768px) {
+    .page-header {
+      padding: 1.5rem 1rem 2rem;
+
+      .header-content {
+        flex-wrap: wrap;
+
+        .header-text    { width: 100%; order: 2; h1 { font-size: 1.5rem; } }
+        .btn-back       { order: 1; }
+        .header-actions {
+          order: 3; width: 100%; justify-content: center;
+          .btn-action {
+            flex: 1; justify-content: center; padding: .75rem;
+            .material-icons { font-size: 24px; }
+          }
+        }
+      }
+    }
+
+    .content-area  { padding: 0 1rem; gap: 1rem; }
+    .info-section  { padding: 1.5rem; }
+    .parties-grid  { grid-template-columns: 1fr; }
+    .financial-grid{ grid-template-columns: 1fr; }
+
+    .pdf-view {
+      height: calc(100vh - 180px);
+      min-height: 400px;
+    }
+  }
+}

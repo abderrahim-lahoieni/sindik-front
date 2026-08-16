@@ -1,0 +1,314 @@
+<!-- src/app/features/admin/dashboard/admin-dashboard.component.html -->
+
+<div class="admin-dashboard">
+
+  <!-- Hero Header -->
+  <div class="dashboard-hero">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">
+          <span class="wave">👋</span>
+          Bienvenue sur votre Dashboard
+        </h1>
+        <p class="hero-subtitle">
+          Vue d'ensemble complète de votre système de gestion immobilière
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-container">
+    <div class="spinner"></div>
+    <p>Chargement de votre dashboard...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading()" class="dashboard-content">
+
+    <!-- Stats Overview -->
+    <div class="stats-section">
+      <h2 class="section-title">
+        <mat-icon>analytics</mat-icon>
+        Statistiques Globales
+      </h2>
+
+      <div class="stats-grid">
+        <!-- Résidences -->
+        <div class="stat-card residences" (click)="navigateTo('/admin/residences')">
+          <div class="stat-icon">
+            <mat-icon>apartment</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ totalResidences() }}</div>
+            <div class="stat-label">Résidences</div>
+          </div>
+          <div class="stat-trend">
+            <span class="trend-badge positive">+12%</span>
+          </div>
+        </div>
+
+        <!-- Bâtiments -->
+        <div class="stat-card buildings" (click)="navigateTo('/admin/buildings')">
+          <div class="stat-icon">
+            <mat-icon>domain</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ totalBuildings() }}</div>
+            <div class="stat-label">Bâtiments</div>
+          </div>
+          <div class="stat-trend">
+            <span class="trend-badge positive">+8%</span>
+          </div>
+        </div>
+
+        <!-- Unités -->
+        <div class="stat-card units" (click)="navigateTo('/admin/units')">
+          <div class="stat-icon">
+            <mat-icon>meeting_room</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ totalUnits() }}</div>
+            <div class="stat-label">Unités</div>
+          </div>
+          <div class="stat-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="occupancyPercentage()"></div>
+            </div>
+            <span class="progress-text">{{ occupancyPercentage() }}% occupé</span>
+          </div>
+        </div>
+
+        <!-- Résidents -->
+        <div class="stat-card residents" (click)="navigateTo('/admin/residents')">
+          <div class="stat-icon">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ totalResidents() }}</div>
+            <div class="stat-label">Résidents</div>
+          </div>
+          <div class="stat-info">
+            <mat-icon>star</mat-icon>
+            <span>{{ ownersPercentage() }}% propriétaires</span>
+          </div>
+        </div>
+
+        <!-- Utilisateurs -->
+        <div class="stat-card users" (click)="navigateTo('/admin/settings')">
+          <div class="stat-icon">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ totalUsers() }}</div>
+            <div class="stat-label">Utilisateurs</div>
+          </div>
+          <div class="stat-trend">
+            <span class="trend-badge positive">+5</span>
+          </div>
+        </div>
+
+        <!-- Disponibilité -->
+        <div class="stat-card available">
+          <div class="stat-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{ availableUnits() }}</div>
+            <div class="stat-label">Unités Disponibles</div>
+          </div>
+          <div class="stat-trend">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+      
+      <!-- Unités par Type -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3 class="chart-title">
+            <mat-icon>pie_chart</mat-icon>
+            Unités par Type
+          </h3>
+        </div>
+        <div class="chart-body">
+          <div class="chart-bars">
+            <div *ngFor="let item of unitsByType()" class="chart-bar-item">
+              <div class="bar-label-row">
+                <span class="bar-label">{{ item.label }}</span>
+                <span class="bar-value">{{ item.value }}</span>
+              </div>
+              <div class="bar-container">
+                <div 
+                  class="bar-fill" 
+                  [style.width.%]="item.percentage"
+                  [style.background]="item.color">
+                </div>
+              </div>
+              <span class="bar-percentage">{{ item.percentage }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Résidents par Type -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3 class="chart-title">
+            <mat-icon>donut_small</mat-icon>
+            Résidents par Type
+          </h3>
+        </div>
+        <div class="chart-body">
+          <div class="donut-chart">
+            <div class="donut-stats">
+              <div *ngFor="let item of residentsByType()" class="donut-stat">
+                <div class="donut-stat-color" [style.background]="item.color"></div>
+                <div class="donut-stat-info">
+                  <div class="donut-stat-label">{{ item.label }}</div>
+                  <div class="donut-stat-value">{{ item.value }} ({{ item.percentage }}%)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bâtiments par Résidence -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3 class="chart-title">
+            <mat-icon>bar_chart</mat-icon>
+            Top 5 Résidences
+          </h3>
+        </div>
+        <div class="chart-body">
+          <div class="chart-bars">
+            <div *ngFor="let item of buildingsByResidence()" class="chart-bar-item">
+              <div class="bar-label-row">
+                <span class="bar-label">{{ item.label }}</span>
+                <span class="bar-value">{{ item.value }}</span>
+              </div>
+              <div class="bar-container">
+                <div 
+                  class="bar-fill" 
+                  [style.width.%]="item.percentage * 2"
+                  [style.background]="item.color">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions-section">
+      <h2 class="section-title">
+        <mat-icon>flash_on</mat-icon>
+        Actions Rapides
+      </h2>
+
+      <div class="quick-actions-grid">
+        <div 
+          *ngFor="let action of quickActions" 
+          class="quick-action-card"
+          (click)="handleQuickAction(action)"
+          [style.background]="action.gradient">
+          <mat-icon class="action-icon">{{ action.icon }}</mat-icon>
+          <h3 class="action-title">{{ action.title }}</h3>
+          <p class="action-description">{{ action.description }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="activities-section">
+      <h2 class="section-title">
+        <mat-icon>history</mat-icon>
+        Activités Récentes
+      </h2>
+
+      <div class="activities-list">
+        <div 
+          *ngFor="let activity of recentActivities()" 
+          class="activity-item"
+          [class]="'activity-' + activity.type">
+          <div class="activity-icon">
+            <mat-icon>{{ activity.icon }}</mat-icon>
+          </div>
+          <div class="activity-content">
+            <h4 class="activity-title">{{ activity.title }}</h4>
+            <p class="activity-description">{{ activity.description }}</p>
+          </div>
+          <div class="activity-time">{{ activity.time }}</div>
+        </div>
+      </div>
+    </div>
+
+<!-- Charts Visualization Section -->
+<div class="visualization-section">
+  <h2 class="section-title">
+    <mat-icon>bar_chart</mat-icon>
+    Visualisation des Données
+  </h2>
+
+  <div class="charts-visualization-grid">
+    
+    <!-- Graphique d'Occupation -->
+    <div class="chart-visualization-card">
+      <div class="chart-vis-header">
+        <h3 class="chart-vis-title">
+          <mat-icon>donut_large</mat-icon>
+          Répartition des Unités
+        </h3>
+        <div class="chart-vis-subtitle">
+          État actuel de l'occupation
+        </div>
+      </div>
+      <div class="chart-vis-body">
+        <div class="chart-container-donut">
+          <canvas #occupancyChart></canvas>
+        </div>
+        <div class="chart-summary">
+          <div class="summary-item">
+            <div class="summary-dot occupied"></div>
+            <span class="summary-label">Occupées:</span>
+            <span class="summary-value">{{ totalUnits() - availableUnits() }}</span>
+          </div>
+          <div class="summary-item">
+            <div class="summary-dot available"></div>
+            <span class="summary-label">Disponibles:</span>
+            <span class="summary-value">{{ availableUnits() }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphique Mensuel en Barres -->
+    <div class="chart-visualization-card large">
+      <div class="chart-vis-header">
+        <h3 class="chart-vis-title">
+          <mat-icon>trending_up</mat-icon>
+          Évolution Mensuelle
+        </h3>
+        <div class="chart-vis-subtitle">
+          Résidents, unités et taux d'occupation sur 12 mois
+        </div>
+      </div>
+      <div class="chart-vis-body">
+        <div class="chart-container-bar">
+          <canvas #monthlyChart></canvas>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  </div>
+
+</div>

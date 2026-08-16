@@ -1,0 +1,31 @@
+@use '@angular/material' as mat;
+
+/* Core styles */
+@include mat.core();
+
+/* ===== THEME LIGHT MATERIAL 3 ===== */
+$light-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  )
+  // ✅ pas de density ici
+));
+
+/* Appliquer le thème à tous les composants */
+:root {
+  @include mat.all-component-themes($light-theme);
+}
+
+/* Global styles */
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #f5f7fa;
+  color: #111;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

@@ -1,0 +1,158 @@
+<div class="table-container">
+
+  <!-- Toolbar -->
+  <div class="table-toolbar">
+    <div class="search-box">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        placeholder="Rechercher..."
+        [value]="searchQuery()"
+        (input)="onSearchChange($any($event.target).value)"
+        class="search-input"
+      />
+    </div>
+
+    <div class="toolbar-actions">
+      <ng-content select="[toolbarActions]"></ng-content>
+    </div>
+  </div>
+
+  <!-- Table Wrapper -->
+  <div class="table-wrapper">
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" *ngIf="loading">
+      <mat-spinner diameter="48"></mat-spinner>
+    </div>
+
+    <!-- Table -->
+    <table
+      mat-table
+      [dataSource]="paginatedData"
+      matSort
+      (matSortChange)="onSortChange($event)"
+      [class.striped]="striped"
+      [class.hoverable]="hoverable"
+      class="data-table"
+    >
+
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="select" *ngIf="selectable">
+        <th mat-header-cell *matHeaderCellDef class="checkbox-cell">
+          <mat-checkbox
+            [checked]="allSelected"
+            [indeterminate]="someSelected"
+            (change)="toggleAllRows()"
+          ></mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row" class="checkbox-cell">
+          <mat-checkbox
+            [checked]="isRowSelected(row)"
+            (change)="toggleRow(row)"
+            (click)="$event.stopPropagation()"
+          ></mat-checkbox>
+        </td>
+      </ng-container>
+
+      <!-- Data Columns -->
+      <ng-container *ngFor="let column of columns" [matColumnDef]="column.key">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          [mat-sort-header]="column.sortable !== false ? column.key : ''"
+          [disabled]="column.sortable === false"
+          [style.width]="column.width"
+          [style.text-align]="getColumnAlignment(column)"
+        >
+          {{ column.label }}
+        </th>
+        <td
+          mat-cell
+          *matCellDef="let row"
+          [style.text-align]="getColumnAlignment(column)"
+          (click)="onRowClick(row)"
+        >
+          <ng-container *ngIf="getCellValue(row, column.key) !== null && getCellValue(row, column.key) !== undefined; else emptyCell">
+  <span
+    [innerHTML]="
+      column.format
+        ? column.format(getCellValue(row, column.key), row)
+        : getCellValue(row, column.key)
+    "
+  ></span>
+          </ng-container>
+
+          <ng-template #emptyCell>
+            <span class="empty-cell">—</span>
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions" *ngIf="actions.length > 0">
+        <th  mat-header-cell *matHeaderCellDef class="actions-cell"> <span *ngIf="showActions">Actions</span></th>
+
+        <td mat-cell *matCellDef="let row" class="actions-cell" >
+          <button *ngIf="showActions"
+                  mat-icon-button
+            [matMenuTriggerFor]="actionsMenu"
+            class="actions-button"
+            (click)="$event.stopPropagation()"
+          >
+            <mat-icon>more_vert</mat-icon>
+          </button>
+
+          <mat-menu #actionsMenu="matMenu">
+            <ng-container *ngFor="let action of actions">
+              <button
+                mat-menu-item
+                *ngIf="!action.hidden || !action.hidden(row)"
+                (click)="executeAction(action, row)"
+                [class]="'action-' + (action.color || 'default')"
+              >
+                <mat-icon>
+                  {{ typeof action.icon === 'function' ? action.icon(row) : action.icon }}
+                </mat-icon>
+
+                <span>
+            {{ typeof action.label === 'function' ? action.label(row) : action.label }}
+          </span>
+              </button>
+            </ng-container>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <!-- Header & Rows -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        [class.selected]="isRowSelected(row)"
+      ></tr>
+
+      <!-- Empty State -->
+      <tr class="mat-row" *matNoDataRow>
+        <td [attr.colspan]="displayedColumns.length" class="empty-state">
+          <div class="empty-content">
+            <mat-icon class="empty-icon">inbox</mat-icon>
+            <p class="empty-message">{{ emptyMessage }}</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <mat-paginator
+    *ngIf="showPagination && filteredData.length > 0"
+    [length]="filteredData.length"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="pageSizeOptions"
+    [pageIndex]="currentPage()"
+    (page)="onPageChange($event)"
+    showFirstLastButtons
+  ></mat-paginator>
+
+</div>

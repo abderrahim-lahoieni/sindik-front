@@ -1,0 +1,108 @@
+<!-- src/app/features/syndic/contracts/contracts.component.html -->
+
+<div class="syndic-contracts">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1>Mes Contrats</h1>
+      <p class="subtitle">Gérez les contrats de vos bâtiments</p>
+    </div>
+
+    <div class="header-actions">
+      <app-button
+        (btnClick)="openCreatePage()"
+        variant="primary"
+        icon="note_add">
+        Nouveau Contrat
+      </app-button>
+    </div>
+  </div>
+
+  <!-- Stats & Filters Row -->
+  <div class="top-row">
+
+    <!-- Stats Card -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon total">
+          <span class="emoji">📄</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ contracts().length }}</div>
+          <div class="stat-label">Total contrats</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="filters-card">
+      <form [formGroup]="searchForm" class="filters-grid">
+
+        <!-- Building filter -->
+        <div class="filter-group">
+          <label>Bâtiment</label>
+          <select [formControl]="searchForm.controls.buildingUuid" class="filter-select">
+            <option *ngFor="let opt of buildingOptions()" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Type filter -->
+        <div class="filter-group">
+          <label>Type</label>
+          <select [formControl]="searchForm.controls.type" class="filter-select">
+            <option *ngFor="let opt of contractTypeOptions" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Status filter -->
+        <div class="filter-group">
+          <label>Statut</label>
+          <select [formControl]="searchForm.controls.status" class="filter-select">
+            <option *ngFor="let opt of contractStatusOptions" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Reset button -->
+        <div class="filter-group filter-actions">
+          <button
+            type="button"
+            class="btn-reset"
+            (click)="searchForm.reset()"
+            [disabled]="!searchForm.dirty">
+            Réinitialiser
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Table -->
+  <div class="table-container">
+    <app-table
+      [columns]="columns"
+      [data]="contracts()"
+      [actions]="actions"
+      [showActions]="true"
+      [loading]="loading()"
+      (rowClick)="viewContract($event)"
+      [selectable]="false"
+      [striped]="true"
+      [hoverable]="true"
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      [showPagination]="true"
+      emptyMessage="Aucun contrat trouvé"
+    >
+    </app-table>
+  </div>
+
+</div>

@@ -1,0 +1,118 @@
+<!-- src/app/features/admin/residents/residents.component.html -->
+
+<div class="resident-management">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1>Gestion des résidents</h1>
+      <p class="subtitle">Voir les résidents de vos résidences</p>
+    </div>
+  </div>
+
+  <!-- Stats & Filters Row -->
+  <div class="top-row">
+
+    <!-- Stats Card -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon total">
+          <span class="emoji">👥</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ residents().length }}</div>
+          <div class="stat-label">Total résidents</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="filters-card">
+      <form [formGroup]="searchForm" class="filters-grid">
+
+        <!-- Residence filter -->
+        <div class="filter-group">
+          <label>Résidence</label>
+          <select [formControl]="searchForm.controls.residenceUuid" class="filter-select">
+            <option *ngFor="let opt of residenceOptions()" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Building filter -->
+        <div class="filter-group">
+          <label>Bâtiment</label>
+          <select [formControl]="searchForm.controls.buildingUuid" class="filter-select">
+            <option *ngFor="let opt of buildingOptions()" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Unit filter -->
+        <div class="filter-group">
+          <label>Unité</label>
+          <select [formControl]="searchForm.controls.unitUuid" class="filter-select">
+            <option *ngFor="let opt of unitOptions()" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Owner type filter -->
+        <div class="filter-group">
+          <label>Type</label>
+          <select [formControl]="searchForm.controls.ownerType" class="filter-select">
+            <option *ngFor="let opt of ownerTypeOptions" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Status filter -->
+        <div class="filter-group">
+          <label>Statut</label>
+          <select [formControl]="searchForm.controls.status" class="filter-select">
+            <option *ngFor="let opt of statusOptions" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Reset button -->
+        <div class="filter-group filter-actions">
+          <button
+            type="button"
+            class="btn-reset"
+            (click)="searchForm.reset()"
+            [disabled]="!searchForm.dirty">
+            Réinitialiser
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Table -->
+  <div class="table-container">
+    <app-table
+      [columns]="columns"
+      [data]="residents()"
+      [actions]="actions"
+      [loading]="loading()"
+      [selectable]="isAdmin()"
+      [striped]="true"
+      [hoverable]="true"
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      [showPagination]="true"
+      emptyMessage="Aucun résident trouvé"
+      (selectionChange)="onSelectionChange($event)"
+    >
+    </app-table>
+  </div>
+
+</div>

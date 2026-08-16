@@ -1,0 +1,27 @@
+<button
+  [type]="type"
+  [class]="buttonClasses"
+  [disabled]="disabled || loading"
+  (click)="onClick($event)"
+  matRipple
+>
+  <!-- Loading Spinner -->
+  <span class="button-spinner" *ngIf="loading">
+    <mat-spinner diameter="16"></mat-spinner>
+  </span>
+
+  <!-- Icon Left -->
+  <mat-icon *ngIf="icon && iconPosition === 'left' && !loading" class="button-icon icon-left">
+    {{ icon }}
+  </mat-icon>
+
+  <!-- Button Content -->
+  <span class="button-content">
+    <ng-content></ng-content>
+  </span>
+
+  <!-- Icon Right -->
+  <mat-icon *ngIf="icon && iconPosition === 'right' && !loading" class="button-icon icon-right">
+    {{ icon }}
+  </mat-icon>
+</button>

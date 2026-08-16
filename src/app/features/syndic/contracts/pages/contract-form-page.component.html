@@ -1,0 +1,532 @@
+<!-- src/app/features/syndic/contracts/pages/contract-form-page.component.html -->
+
+<div class="contract-form-page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <button class="btn-back" (click)="cancel()">
+        <span class="material-icons">arrow_back</span>
+      </button>
+      <div class="header-text">
+        <h1>{{ pageTitle }}</h1>
+        <p class="subtitle">
+          {{ mode() === 'create' ? 'Remplissez les informations du contrat étape par étape' : 'Modifiez les informations du contrat' }}
+        </p>
+      </div>
+      
+      <!-- Bouton supprimer en mode edit -->
+      <button 
+        *ngIf="mode() === 'edit'" 
+        class="btn-delete"
+        (click)="confirmDelete()">
+        <span class="material-icons">delete</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loadingContract()" class="loading-container">
+    <div class="spinner"></div>
+    <p>Chargement du contrat...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loadingContract()">
+
+    <!-- Stepper -->
+    <div class="stepper-container">
+      <div class="stepper">
+        <div 
+          class="step" 
+          [class.active]="currentStep() === 1"
+          [class.completed]="currentStep() > 1"
+          (click)="goToStep(1)">
+          <div class="step-circle">
+            <span class="material-icons" *ngIf="currentStep() > 1">check</span>
+            <span *ngIf="currentStep() <= 1">1</span>
+          </div>
+          <div class="step-label">{{ mode() === 'create' ? 'Localisation' : 'Informations' }}</div>
+        </div>
+
+        <div class="step-line" [class.completed]="currentStep() > 1"></div>
+
+        <div 
+          class="step" 
+          [class.active]="currentStep() === 2"
+          [class.completed]="currentStep() > 2"
+          (click)="goToStep(2)">
+          <div class="step-circle">
+            <span class="material-icons" *ngIf="currentStep() > 2">check</span>
+            <span *ngIf="currentStep() <= 2">2</span>
+          </div>
+          <div class="step-label">{{ mode() === 'create' ? 'Informations' : 'Période' }}</div>
+        </div>
+
+        <div class="step-line" [class.completed]="currentStep() > 2"></div>
+
+        <div 
+          class="step" 
+          [class.active]="currentStep() === 3"
+          [class.completed]="currentStep() > 3"
+          (click)="goToStep(3)">
+          <div class="step-circle">
+            <span class="material-icons" *ngIf="currentStep() > 3">check</span>
+            <span *ngIf="currentStep() <= 3">3</span>
+          </div>
+          <div class="step-label">Financier</div>
+        </div>
+
+        <div class="step-line" [class.completed]="currentStep() > 3"></div>
+
+        <div 
+          class="step" 
+          [class.active]="currentStep() === 4"
+          [class.completed]="currentStep() > 4">
+          <div class="step-circle">
+            <span class="material-icons" *ngIf="currentStep() > 4">check</span>
+            <span *ngIf="currentStep() <= 4">4</span>
+          </div>
+          <div class="step-label">Options</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="form-container">
+      <form [formGroup]="form">
+
+        <!-- STEP 1: Localisation (Create) / Informations contrat (Edit) -->
+        <div class="step-content" *ngIf="currentStep() === 1">
+          
+          <!-- Mode CREATE: Localisation -->
+          <div *ngIf="mode() === 'create'">
+            <div class="step-header">
+              <span class="emoji">🏢</span>
+              <h2>Sélectionnez la localisation</h2>
+              <p>Choisissez le bâtiment, l'unité et le résident pour ce contrat</p>
+            </div>
+
+            <div class="form-grid">
+              <!-- Bâtiment -->
+              <div class="form-group full-width">
+                <label class="form-label">
+                  <span class="material-icons">apartment</span>
+                  Bâtiment <span class="required">*</span>
+                </label>
+                <select 
+                  formControlName="buildingUuid" 
+                  class="form-select"
+                  (change)="onBuildingChange($event)">
+                  <option value="">Sélectionnez un bâtiment</option>
+                  <option *ngFor="let opt of buildingOptions()" [value]="opt.value">
+                    {{ opt.label }}
+                  </option>
+                </select>
+                <span *ngIf="buildingError" class="error-text">{{ buildingError }}</span>
+              </div>
+
+              <!-- Unité -->
+              <div class="form-group">
+                <label class="form-label">
+                  <span class="material-icons">door_front</span>
+                  Unité <span class="required">*</span>
+                </label>
+                <select 
+                  formControlName="unitUuid" 
+                  class="form-select"
+                  [disabled]="loadingUnits() || unitOptions().length === 0">
+                  <option value="">Sélectionnez une unité</option>
+                  <option *ngFor="let opt of unitOptions()" [value]="opt.value">
+                    {{ opt.label }}
+                  </option>
+                </select>
+                <div *ngIf="loadingUnits()" class="loading-text">Chargement...</div>
+                <span *ngIf="unitError" class="error-text">{{ unitError }}</span>
+              </div>
+
+              <!-- Résident -->
+              <div class="form-group">
+                <label class="form-label">
+                  <span class="material-icons">person</span>
+                  Résident <span class="required">*</span>
+                </label>
+                <select 
+                  formControlName="residentUuid" 
+                  class="form-select"
+                  [disabled]="loadingResidents() || residentOptions().length === 0">
+                  <option value="">Sélectionnez un résident</option>
+                  <option *ngFor="let opt of residentOptions()" [value]="opt.value">
+                    {{ opt.label }}
+                  </option>
+                </select>
+                <div *ngIf="loadingResidents()" class="loading-text">Chargement...</div>
+                <span *ngIf="residentError" class="error-text">{{ residentError }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mode EDIT: Info contrat -->
+          <div *ngIf="mode() === 'edit' && contract()">
+            <div class="step-header">
+              <span class="emoji">📋</span>
+              <h2>Informations du contrat</h2>
+              <p>Contrat N° {{ contract()?.contractNumber }}</p>
+            </div>
+
+            <div class="contract-info-display">
+              <div class="info-card">
+                <div class="info-row">
+                  <span class="info-label">
+                    <span class="material-icons">person</span>
+                    Résident
+                  </span>
+                  <span class="info-value">{{ contract()?.residentName }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">
+                    <span class="material-icons">apartment</span>
+                    Bâtiment
+                  </span>
+                  <span class="info-value">{{ contract()?.buildingName }}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">
+                    <span class="material-icons">door_front</span>
+                    Unité
+                  </span>
+                  <span class="info-value">{{ contract()?.unitNumber }}</span>
+                </div>
+              </div>
+
+              <div class="form-grid" style="margin-top: 2rem;">
+                <!-- Type -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="material-icons">category</span>
+                    Type de contrat <span class="required">*</span>
+                  </label>
+                  <select formControlName="type" class="form-select">
+                    <option *ngFor="let opt of contractTypeOptions" [value]="opt.value">
+                      {{ opt.label }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Statut -->
+                <div class="form-group">
+                  <label class="form-label">
+                    <span class="material-icons">flag</span>
+                    Statut <span class="required">*</span>
+                  </label>
+                  <select formControlName="status" class="form-select">
+                    <option *ngFor="let opt of contractStatusOptions" [value]="opt.value">
+                      {{ opt.label }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- STEP 2: Informations (Create) / Période (Edit) -->
+        <div class="step-content" *ngIf="currentStep() === 2">
+          <div class="step-header">
+            <span class="emoji">📄</span>
+            <h2>{{ mode() === 'create' ? 'Informations du contrat' : 'Période du contrat' }}</h2>
+            <p>{{ mode() === 'create' ? 'Définissez le type, le statut et la période du contrat' : 'Modifiez les dates du contrat' }}</p>
+          </div>
+
+          <div class="form-grid">
+            <!-- Type (Create only) -->
+            <div class="form-group" *ngIf="mode() === 'create'">
+              <label class="form-label">
+                <span class="material-icons">category</span>
+                Type de contrat <span class="required">*</span>
+              </label>
+              <select formControlName="type" class="form-select">
+                <option *ngFor="let opt of contractTypeOptions" [value]="opt.value">
+                  {{ opt.label }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Statut (Create only) -->
+            <div class="form-group" *ngIf="mode() === 'create'">
+              <label class="form-label">
+                <span class="material-icons">flag</span>
+                Statut <span class="required">*</span>
+              </label>
+              <select formControlName="status" class="form-select">
+                <option *ngFor="let opt of contractStatusOptions" [value]="opt.value">
+                  {{ opt.label }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Date début -->
+            <div class="form-group">
+              <label class="form-label">
+                <span class="material-icons">event</span>
+                Date de début <span class="required">*</span>
+              </label>
+              <input 
+                type="date" 
+                formControlName="startDate" 
+                class="form-input"
+              />
+              <span *ngIf="startDateError" class="error-text">{{ startDateError }}</span>
+            </div>
+
+            <!-- Date fin -->
+            <div class="form-group">
+              <label class="form-label">
+                <span class="material-icons">event</span>
+                Date de fin (optionnel)
+              </label>
+              <input 
+                type="date" 
+                formControlName="endDate" 
+                class="form-input"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: Financier -->
+        <div class="step-content" *ngIf="currentStep() === 3">
+          <div class="step-header">
+            <span class="emoji">💰</span>
+            <h2>Informations financières</h2>
+            <p>Définissez les montants et la fréquence de paiement</p>
+          </div>
+
+          <div class="form-grid">
+            <!-- Loyer mensuel -->
+            <div class="form-group">
+              <label class="form-label">
+                <span class="material-icons">payments</span>
+                Loyer mensuel (MAD) <span class="required">*</span>
+              </label>
+              <input
+                type="number"
+                formControlName="monthlyRent"
+                class="form-input"
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+              />
+              <span *ngIf="monthlyRentError" class="error-text">{{ monthlyRentError }}</span>
+            </div>
+
+            <!-- Caution -->
+            <div class="form-group">
+              <label class="form-label">
+                <span class="material-icons">account_balance_wallet</span>
+                Caution (MAD)
+              </label>
+              <input
+                type="number"
+                formControlName="depositAmount"
+                class="form-input"
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+              />
+            </div>
+
+            <!-- Fréquence -->
+            <div class="form-group">
+              <label class="form-label">
+                <span class="material-icons">schedule</span>
+                Fréquence de paiement <span class="required">*</span>
+              </label>
+              <select formControlName="paymentFrequency" class="form-select">
+                <option *ngFor="let opt of paymentFrequencyOptions" [value]="opt.value">
+                  {{ opt.label }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Jour de paiement -->
+            <div class="form-group">
+              <label class="form-label">
+                <span class="material-icons">today</span>
+                Jour de paiement (1-31)
+              </label>
+              <input
+                type="number"
+                formControlName="paymentDay"
+                class="form-input"
+                placeholder="1"
+                min="1"
+                max="31"
+              />
+            </div>
+
+            <!-- Caution payée -->
+            <div class="form-group full-width">
+              <div class="toggle-field">
+                <label class="toggle-label">
+                  <span class="material-icons">check_circle</span>
+                  Caution déjà payée
+                </label>
+                <label class="switch">
+                  <input type="checkbox" formControlName="depositPaid">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: Options -->
+        <div class="step-content" *ngIf="currentStep() === 4">
+          <div class="step-header">
+            <span class="emoji">⚙️</span>
+            <h2>Options et notes</h2>
+            <p>Configurez les options de renouvellement et ajoutez des notes</p>
+          </div>
+
+          <div class="form-grid">
+            <!-- Préavis -->
+            <div class="form-group">
+              <label class="form-label">
+                <span class="material-icons">notification_important</span>
+                Délai de préavis (jours)
+              </label>
+              <input
+                type="number"
+                formControlName="renewalNoticeDays"
+                class="form-input"
+                placeholder="30"
+                min="0"
+              />
+            </div>
+
+            <!-- Renouvellement auto -->
+            <div class="form-group">
+              <div class="toggle-field">
+                <label class="toggle-label">
+                  <span class="material-icons">autorenew</span>
+                  Renouvellement automatique
+                </label>
+                <label class="switch">
+                  <input type="checkbox" formControlName="autoRenewable">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Actif (Edit only) -->
+            <div class="form-group" *ngIf="mode() === 'edit'">
+              <div class="toggle-field">
+                <label class="toggle-label">
+                  <span class="material-icons">toggle_on</span>
+                  Contrat actif
+                </label>
+                <label class="switch">
+                  <input type="checkbox" formControlName="isActive">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Termes -->
+            <div class="form-group full-width">
+              <label class="form-label">
+                <span class="material-icons">description</span>
+                Termes et conditions
+              </label>
+              <textarea
+                formControlName="terms"
+                class="form-textarea"
+                rows="4"
+                placeholder="Termes et conditions du contrat..."
+              ></textarea>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group full-width">
+              <label class="form-label">
+                <span class="material-icons">note</span>
+                Notes
+              </label>
+              <textarea
+                formControlName="notes"
+                class="form-textarea"
+                rows="3"
+                placeholder="Notes additionnelles..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Navigation Footer -->
+  <div class="form-footer">
+    <div class="footer-content">
+      
+      <!-- Left side -->
+      <div class="footer-left">
+        <app-button
+          *ngIf="currentStep() > 1"
+          size="large"
+          (btnClick)="previousStep()">
+          <span class="material-icons">arrow_back</span>
+          Précédent
+        </app-button>
+
+        <app-button
+          *ngIf="currentStep() === 1"
+          size="large"
+          (btnClick)="cancel()">
+          <span class="material-icons">close</span>
+          Annuler
+        </app-button>
+      </div>
+
+      <!-- Center - Progress indicator -->
+      <div class="progress-indicator">
+        <span class="step-text">Étape {{ currentStep() }} / {{ totalSteps }}</span>
+        <div class="progress-bar">
+          <div 
+            class="progress-fill" 
+            [style.width.%]="(currentStep() / totalSteps) * 100">
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side -->
+      <div class="footer-right">
+        <app-button
+          *ngIf="currentStep() < totalSteps"
+          variant="primary"
+          size="large"
+          (btnClick)="nextStep()">
+          Suivant
+          <span class="material-icons">arrow_forward</span>
+        </app-button>
+
+        <app-button
+          *ngIf="currentStep() === totalSteps"
+          variant="success"
+          size="large"
+          [loading]="loading()"
+          [disabled]="form.invalid || loading() || (mode() === 'edit' && !hasChanges())"
+          (btnClick)="submit()">
+          <span class="material-icons">{{ mode() === 'create' ? 'check' : 'save' }}</span>
+          {{ submitButtonText }}
+        </app-button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

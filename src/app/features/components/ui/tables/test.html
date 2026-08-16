@@ -1,0 +1,25 @@
+<div style="padding: 24px; background: #f5f6fa; min-height: 100vh;">
+
+  <h2 style="margin-bottom: 16px;"> Test Table Component</h2>
+
+  <app-table
+    [columns]="columns"
+    [data]="data"
+    [actions]="actions"
+    [loading]="loading"
+    [selectable]="true"
+    [striped]="true"
+    [hoverable]="true"
+    [pageSize]="5"
+    [pageSizeOptions]="[5, 10, 25]"
+    [showPagination]="true"
+    emptyMessage="Aucun appartement trouvé"
+
+    (rowClick)="onRowClick($event)"
+    (selectionChange)="onSelectionChange($event)"
+    (sortChange)="onSortChange($event)"
+    (pageChange)="onPageChange($event)"
+  >
+  </app-table>
+
+</div>

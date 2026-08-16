@@ -1,0 +1,108 @@
+<div class="admin-container" [class.sidebar-collapsed]="!sidebarOpen()">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <!-- Logo Section -->
+    <div class="logo-section" [class.collapsed]="!sidebarOpen()">
+      <div class="logo">
+        <img src="logo_sindik.png" alt="Logo">
+      </div>
+      <h2 class="brand-name" *ngIf="sidebarOpen()">Sindik</h2>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="navigation">
+      <ul class="menu-list">
+        <li *ngFor="let item of filteredMenu()" class="menu-item">
+          <a
+            [routerLink]="item.link"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="menu-link"
+          >
+            <span class="icon-wrapper">
+              <mat-icon>{{ item.icon }}</mat-icon>
+            </span>
+            <span class="menu-label" *ngIf="sidebarOpen()">{{ item.label }}</span>
+            <span class="active-indicator"></span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer" *ngIf="sidebarOpen()">
+      <p class="copyright">©Sindik {{ currentYear }} All Rights Reserved</p>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+
+    <!-- Top Bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <!-- Toggle Button -->
+        <button
+          mat-icon-button
+          class="toggle-btn"
+          (click)="toggleSidebar()"
+        >
+          <mat-icon>{{ sidebarOpen() ? 'menu_open' : 'menu' }}</mat-icon>
+        </button>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input
+            type="text"
+            placeholder="Rechercher..."
+            class="search-input"
+          >
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <!-- Notifications -->
+        <button mat-icon-button class="icon-button">
+          <mat-icon class="notification-icon">notifications</mat-icon>
+        </button>
+
+        <!-- User Menu -->
+        <div class="user-menu">
+          <button
+            mat-button
+            [matMenuTriggerFor]="userMenu"
+            class="user-button"
+          >
+            <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
+            <mat-icon>person</mat-icon>
+            <span class="user-name">{{username}}({{role}})</span>
+          </button>
+
+          <mat-menu #userMenu="matMenu" class="user-dropdown" xPosition="before">
+            <button mat-menu-item class="menu-dropdown-item">
+              <mat-icon>person</mat-icon>
+              <span>Mon Profil</span>
+            </button>
+            <button mat-menu-item class="menu-dropdown-item">
+              <mat-icon>settings</mat-icon>
+              <span>Paramètres</span>
+            </button>
+            <div class="menu-divider"></div>
+            <button (click)="logout()" mat-menu-item class="menu-dropdown-item logout">
+              <mat-icon>logout</mat-icon>
+              <span>Déconnexion</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dashboard Content -->
+    <section class="dashboard-content">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+
+</div>

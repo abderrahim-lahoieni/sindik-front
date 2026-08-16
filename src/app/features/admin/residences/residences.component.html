@@ -1,0 +1,96 @@
+<!-- src/app/features/admin/residences/residences.component.html -->
+
+<div class="residence-management">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1>Gestion des résidences</h1>
+      <p class="subtitle">Administrez les résidences de la plateforme</p>
+    </div>
+
+    <div class="header-actions">
+      <app-button *ngIf="isAdmin()" (btnClick)="openCreateModal()" variant="primary" icon="apartment">
+        Ajouter Nouvelle résidence
+      </app-button>
+    </div>
+  </div>
+
+  <!-- Stats & Filters Row -->
+  <div class="top-row">
+
+    <!-- Stats Card -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon total">
+          <span class="emoji">🏢</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ residences().length }}</div>
+          <div class="stat-label">Total résidences</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="filters-card">
+      <form [formGroup]="searchForm" class="filters-grid">
+
+        <!-- Type filter -->
+        <div class="filter-group">
+          <label>Type</label>
+          <select [formControl]="searchForm.controls.type" class="filter-select">
+            <option *ngFor="let opt of typeOptions" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Status filter -->
+        <div class="filter-group">
+          <label>Statut</label>
+          <select [formControl]="searchForm.controls.status" class="filter-select">
+            <option *ngFor="let opt of statusOptions" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Reset button -->
+        <div class="filter-group filter-actions">
+          <button
+            type="button"
+            class="btn-reset"
+            (click)="searchForm.reset()"
+            [disabled]="!searchForm.dirty">
+            Réinitialiser
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Table -->
+  <div class="table-container">
+    <app-table
+      [columns]="columns"
+      [data]="residences()"
+      [actions]="actions"
+      [showActions]="isAdmin()"
+      [loading]="loading()"
+      [selectable]="isAdmin()"
+      [striped]="true"
+      [hoverable]="true"
+      [pageSize]="10"
+      (rowClick)="openDetails($event)"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      [showPagination]="true"
+      emptyMessage="Aucune résidence trouvée"
+      (selectionChange)="onSelectionChange($event)"
+    >
+    </app-table>
+  </div>
+
+</div>

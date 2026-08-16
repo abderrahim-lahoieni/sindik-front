@@ -1,0 +1,146 @@
+<!-- src/app/features/syndic/dashboard/syndic-dashboard.component.html -->
+
+<div class="syndic-dashboard">
+
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1>Mon Tableau de Bord</h1>
+      <p class="subtitle">Vue d'ensemble de vos bâtiments</p>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading()" class="loading-container">
+    <div class="spinner"></div>
+    <p>Chargement de votre dashboard...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading() && totalBuildings() === 0" class="empty-state">
+    <div class="empty-icon">🏢</div>
+    <h2>Aucun bâtiment assigné</h2>
+    <p>Vous n'avez pas encore de bâtiments à gérer. Contactez l'administrateur.</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!loading() && totalBuildings() > 0" class="dashboard-content">
+
+    <!-- Global Stats -->
+    <div class="global-stats">
+      <div class="stat-card buildings">
+        <div class="stat-icon">🏗️</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ totalBuildings() }}</div>
+          <div class="stat-label">Bâtiments gérés</div>
+        </div>
+      </div>
+
+      <div class="stat-card units">
+        <div class="stat-icon">🏠</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ totalUnits() }}</div>
+          <div class="stat-label">Total unités</div>
+        </div>
+        <app-button
+          size="small"
+          (btnClick)="viewAllUnits()">
+          Voir tout
+        </app-button>
+      </div>
+
+      <div class="stat-card residents">
+        <div class="stat-icon">👥</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ totalResidents() }}</div>
+          <div class="stat-label">Total résidents</div>
+        </div>
+        <app-button
+          size="small"
+          (btnClick)="viewAllResidents()">
+          Voir tout
+        </app-button>
+      </div>
+
+      <div class="stat-card occupancy">
+        <div class="stat-icon">📊</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ occupancyRate() }}%</div>
+          <div class="stat-label">Taux d'occupation</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buildings Section -->
+    <div class="section-header">
+      <h2>Mes Bâtiments</h2>
+    </div>
+
+    <div class="buildings-grid">
+      <div
+        *ngFor="let stat of buildingsStats()"
+        class="building-card"
+        (click)="navigateToBuilding(stat.buildingUuid)">
+
+        <div class="building-header">
+          <div class="building-info">
+            <h3>{{ stat.buildingName }}</h3>
+            <span class="residence-badge">{{ stat.residenceName }}</span>
+          </div>
+          <div class="building-icon">🏢</div>
+        </div>
+
+        <div class="building-stats">
+          <div class="mini-stat">
+            <div class="mini-stat-value">{{ stat.totalUnits }}</div>
+            <div class="mini-stat-label">Unités</div>
+          </div>
+
+          <div class="mini-stat">
+            <div class="mini-stat-value">{{ stat.occupiedUnits }}</div>
+            <div class="mini-stat-label">Occupées</div>
+          </div>
+
+          <div class="mini-stat">
+            <div class="mini-stat-value">{{ stat.availableUnits }}</div>
+            <div class="mini-stat-label">Disponibles</div>
+          </div>
+
+          <div class="mini-stat">
+            <div class="mini-stat-value">{{ stat.totalResidents }}</div>
+            <div class="mini-stat-label">Résidents</div>
+          </div>
+        </div>
+
+        <div class="building-progress">
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              [style.width.%]="stat.totalUnits > 0 ? (stat.occupiedUnits / stat.totalUnits) * 100 : 0">
+            </div>
+          </div>
+          <span class="progress-text">
+            {{ stat.totalUnits > 0 ? Math.round((stat.occupiedUnits / stat.totalUnits) * 100) : 0 }}% occupé
+          </span>
+        </div>
+
+        <div class="building-actions">
+          <app-button
+            size="small"
+            icon="meeting_room"
+            (btnClick)="navigateToUnits(stat.buildingUuid); $event.stopPropagation()">
+            Unités
+          </app-button>
+          <app-button
+            size="small"
+            icon="people"
+            (btnClick)="navigateToResidents(stat.buildingUuid); $event.stopPropagation()">
+            Résidents
+          </app-button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,125 @@
+<!-- src/app/features/syndic/residents/syndic-residents.component.html -->
+
+<div class="syndic-residents">
+
+  <!-- Header -->
+   <div class="page-header">
+    <div class="header-left">
+      <h1>Mes Résidents</h1>
+      <p class="subtitle">Gérez les résidents de vos bâtiments</p>
+    </div>
+
+    <div class="header-actions">
+      <!-- AJOUTER le toggle vue -->
+      <button class="view-toggle" (click)="toggleViewMode()">
+        <mat-icon>{{ viewMode() === 'table' ? 'grid_view' : 'view_list' }}</mat-icon>
+        <span>{{ viewMode() === 'table' ? 'Vue Cartes' : 'Vue Table' }}</span>
+      </button>
+
+      <app-button
+        (btnClick)="openCreateModal()"
+        variant="primary"
+        icon="person_add">
+        Ajouter Nouveau résident
+      </app-button>
+    </div>
+  </div>
+
+  <!-- Stats & Filters Row -->
+  <div class="top-row">
+
+    <!-- Stats Card -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon total">
+          <span class="emoji">👥</span>
+        </div>
+        <div class="stat-content">
+          <div class="stat-value">{{ residents().length }}</div>
+          <div class="stat-label">Total résidents</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="filters-card">
+      <form [formGroup]="searchForm" class="filters-grid">
+
+        <!-- Building filter -->
+        <div class="filter-group">
+          <label>Bâtiment</label>
+          <select [formControl]="searchForm.controls.buildingUuid" class="filter-select">
+            <option *ngFor="let opt of buildingOptions()" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Unit filter -->
+        <div class="filter-group">
+          <label>Unité</label>
+          <select [formControl]="searchForm.controls.unitUuid" class="filter-select">
+            <option *ngFor="let opt of unitOptions()" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Owner type filter -->
+        <div class="filter-group">
+          <label>Type</label>
+          <select [formControl]="searchForm.controls.ownerType" class="filter-select">
+            <option *ngFor="let opt of ownerTypeOptions" [value]="opt.value">
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Reset button -->
+        <div class="filter-group filter-actions">
+          <button
+            type="button"
+            class="btn-reset"
+            (click)="resetFilters()"
+            [disabled]="!searchForm.dirty">
+            Réinitialiser
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+
+  <!-- Vue Cartes -->
+  <div *ngIf="viewMode() === 'cards'" class="cards-container">
+    <app-card-grid
+      [config]="cardConfig"
+      [data]="residents()"
+      [loading]="loading()"
+      [clickable]="true"
+      (cardClick)="onRowClick($event)"
+      emptyMessage="Aucun résident trouvé"
+    ></app-card-grid>
+  </div>
+
+  <!-- Vue Table -->
+  <div *ngIf="viewMode() === 'table'" class="table-container">
+    <app-table
+      [columns]="columns"
+      [data]="residents()"
+      [actions]="actions"
+      [showActions]="true"
+      (rowClick)="onRowClick($event)"      [loading]="loading()"
+      [selectable]="false"
+      [striped]="true"
+      [hoverable]="true"
+      [pageSize]="10"
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      [showPagination]="true"
+      emptyMessage="Aucun résident trouvé"
+      (selectionChange)="onSelectionChange($event)"
+    >
+    </app-table>
+  </div>
+  </div>

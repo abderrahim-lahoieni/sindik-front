@@ -1,0 +1,92 @@
+<!-- src/app/components/ui/Input/input.component.html -->
+
+<div
+  class="input-wrapper"
+  [class.has-error]="hasError"
+  [class.focused]="isFocused()"
+  [class.disabled]="disabled"
+>
+  <!-- Label -->
+  <label *ngIf="label" class="input-label">
+    {{ label }}
+    <span class="required-asterisk" *ngIf="required">*</span>
+  </label>
+
+  <!-- Input Group -->
+  <div class="input-group">
+
+    <!-- Icon Left -->
+    <span class="input-icon-left" *ngIf="icon">
+      <mat-icon>{{ icon }}</mat-icon>
+    </span>
+
+    <!-- Select Field -->
+    <select
+      *ngIf="isSelect"
+      [disabled]="disabled || readonly"
+      [value]="value()"
+      (change)="onSelectChange($event)"
+      (blur)="onBlur()"
+      (focus)="onFocus()"
+      class="input-field select-field"
+      [class.with-icon-left]="icon"
+    >
+      <option value="">-- Sélectionner --</option>
+      <option *ngFor="let option of options"
+        [value]="option.value"
+        [selected]="option.value === value()">
+       {{ option.label }}
+       </option>
+    </select>
+    <!-- Input Field (for non-select types) -->
+    <input
+      *ngIf="!isSelect"
+      [type]="inputType"
+      [placeholder]="placeholder"
+      [disabled]="disabled"
+      [readonly]="readonly"
+      [value]="value()"
+      (input)="onInputChange($event)"
+      (blur)="onBlur()"
+      (focus)="onFocus()"
+      class="input-field"
+      [class.with-icon-left]="icon"
+      [class.with-icon-right]="type === 'password'"
+    />
+
+    <!-- Password Toggle -->
+    <button
+      *ngIf="type === 'password'"
+      type="button"
+      class="password-toggle"
+      (click)="togglePasswordVisibility()"
+      [disabled]="disabled"
+      tabindex="-1"
+    >
+      <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+    </button>
+
+  </div>
+
+  <!-- Helper / Error / Counter -->
+  <div class="input-footer">
+    <div class="input-messages">
+      <!-- Error Message -->
+      <span class="error-message" *ngIf="hasError">
+        <mat-icon class="error-icon">error</mat-icon>
+        {{ displayError }}
+      </span>
+
+      <!-- Helper Text -->
+      <span class="helper-text" *ngIf="helperText && !hasError">
+        {{ helperText }}
+      </span>
+    </div>
+
+    <!-- Character Counter (only for text inputs) -->
+    <span class="character-counter" *ngIf="maxLength && !isSelect">
+      {{ characterCount }}
+    </span>
+  </div>
+
+</div>
