@@ -1,0 +1,92 @@
+<!-- src/app/features/syndic/units/syndic-units.component.html -->
+
+<div class="syndic-units">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1>Mes Unités</h1>
+      <p class="subtitle">Gérez les unités de vos bâtiments</p>
+    </div>
+
+    <!-- Bouton créer unité -->
+    <div class="header-actions">
+      <app-button
+        (btnClick)="openCreateModal()"
+        icon="add_home">
+        Nouvelle Unité
+      </app-button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon">🏠</div>
+      <div class="stat-content">
+        <div class="stat-value">{{ units().length }}</div>
+        <div class="stat-label">Total unités</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-card">
+    <form [formGroup]="searchForm" class="filters-grid">
+      <div class="filter-group">
+        <label>Bâtiment</label>
+        <select [formControl]="searchForm.controls.buildingUuid" class="filter-select">
+          <option *ngFor="let opt of buildingOptions()" [value]="opt.value">
+            {{ opt.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Type</label>
+        <select [formControl]="searchForm.controls.type" class="filter-select">
+          <option *ngFor="let opt of typeOptions" [value]="opt.value">
+            {{ opt.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Occupation</label>
+        <select [formControl]="searchForm.controls.occupied" class="filter-select">
+          <option *ngFor="let opt of occupancyOptions" [value]="opt.value">
+            {{ opt.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group filter-actions">
+        <button
+          type="button"
+          class="btn-reset"
+          (click)="searchForm.reset()"
+          [disabled]="!searchForm.dirty">
+          Réinitialiser
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Table -->
+  <div class="table-container">
+    <app-table
+      [columns]="columns"
+      [data]="units()"
+      [actions]="actions"
+      [showActions]="true"
+      [loading]="loading()"
+      [striped]="true"
+      [hoverable]="true"
+      [pageSize]="10"
+      [showPagination]="true"
+      emptyMessage="Aucune unité trouvée"
+    >
+    </app-table>
+  </div>
+
+</div>

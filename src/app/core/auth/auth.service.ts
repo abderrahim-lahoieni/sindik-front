@@ -1,141 +1,147 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { AuthRequest, AuthResponse, Role } from './models/auth.model';
 import { Router } from '@angular/router';
+import { catchError, finalize, map, Observable, of, shareReplay, tap, throwError } from 'rxjs';
+import { environment } from '../../../environements/environement';
 import ToastService from '../../features/components/ui/toast/toast.service';
-import { Observable, tap, catchError, of, finalize } from 'rxjs';
+import { AuthRequest, AuthResponse, Role } from './models/auth.model';
+import { TokenStore } from './token.store';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-
   private readonly http = inject(HttpClient);
   private readonly toast = inject(ToastService);
-  private readonly router = inject(Router); // ✅ Inject Router au lieu de location.href
-  private readonly api = 'http://localhost:8080/auth';
-  private logoutTimer?: any;
-
-  // ✅ Constantes pour éviter les erreurs de typo
-  private readonly STORAGE_KEYS = {
-    JWT: 'jwt_token',
-    REFRESH: 'refresh_token',
-    ROLE: 'user_role',
-    USERNAME: 'user_username',
-    UUID:'user_uuid'
-  } as const;
+  private readonly router = inject(Router);
+  private readonly tokenStore = inject(TokenStore);
+  private readonly api = `${environment.baseUrl}/auth`;
+  private logoutTimer?: ReturnType<typeof setTimeout>;
+  private refreshInFlight?: Observable<AuthResponse>;
 
   login(data: AuthRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.api}/login`, data).pipe(
-      tap(response => {
-        // ✅ Sauvegarder TOUTES les infos en une fois
-        this.saveAuthData(response);
-      })
+      tap(response => this.saveAuthData(response))
     );
   }
 
-  // ✅ LOGOUT PROFESSIONNEL
-  logout(showMessage = false, isExpired = false): void {
-    const refreshToken = localStorage.getItem(this.STORAGE_KEYS.REFRESH);
-    const accessToken = localStorage.getItem(this.STORAGE_KEYS.JWT);
+  refreshSession(): Observable<AuthResponse> {
+    if (this.refreshInFlight) return this.refreshInFlight;
 
-    // 1. Appeler le backend pour invalider le refresh token (si présent)
-    if (refreshToken) {
-      this.http.post(`${this.api}/logout`, { refreshToken }, {
-        headers: accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {}
-      }).pipe(
+    const refreshToken = this.tokenStore.getRefreshToken();
+    if (!refreshToken) return throwError(() => new Error('No refresh token available'));
+
+    this.refreshInFlight = this.http
+      .post<AuthResponse>(`${this.api}/refresh`, { refreshToken })
+      .pipe(
+        tap(response => this.saveAuthData(response)),
         catchError(error => {
-          console.error('Logout API error:', error);
-          return of(null);
+          this.clearSession();
+          return throwError(() => error);
         }),
-        finalize(() => {
-          // 2. Nettoyer le localStorage dans tous les cas
-          this.clearLocalStorage();
-        })
-      ).subscribe();
-    } else {
-      // Pas de refresh token, nettoyer directement
-      this.clearLocalStorage();
+        finalize(() => (this.refreshInFlight = undefined)),
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
+
+    return this.refreshInFlight;
+  }
+
+  ensureValidAccessToken(): Observable<string> {
+    const token = this.getToken();
+    if (token && !this.isExpired(token)) return of(token);
+    if (this.tokenStore.getRefreshToken()) {
+      return this.refreshSession().pipe(map(response => response.token));
+    }
+    this.clearSession();
+    return throwError(() => new Error('Session expired'));
+  }
+
+  logout(showMessage = false, isExpired = false): void {
+    const refreshToken = this.tokenStore.getRefreshToken();
+    if (refreshToken) {
+      this.http.post(`${this.api}/logout`, { refreshToken }).pipe(catchError(() => of(null))).subscribe();
     }
 
-    // 3. Arrêter le timer auto-logout
-    this.stopAutoLogout();
-
-    // 4. Afficher message si nécessaire
+    this.clearSession();
     if (showMessage) {
-      const message = isExpired ? 'Votre session a expiré.' : 'Déconnexion réussie.';
-      this.toast.info(message);
+      this.toast.info(isExpired ? 'Votre session a expiré.' : 'Déconnexion réussie.');
     }
-
-    // 5. Rediriger vers login
-    this.router.navigate(['/login']).then(r => console.log(r));
+    void this.router.navigate(['/login']);
   }
 
-  // ✅ Nouvelle méthode pour sauvegarder les données d'auth
-  private saveAuthData(response: AuthResponse): void {
-    localStorage.setItem(this.STORAGE_KEYS.JWT, response.token);
-    localStorage.setItem(this.STORAGE_KEYS.REFRESH, response.refreshToken);
-    localStorage.setItem(this.STORAGE_KEYS.ROLE, response.role);
-    localStorage.setItem(this.STORAGE_KEYS.USERNAME, response.username);
-    localStorage.setItem(this.STORAGE_KEYS.UUID,response.uuid)
-
-    // Démarrer l'auto-logout si expiresIn est fourni
-    if (response.expiresIn) {
-      this.startAutoLogout(response.expiresIn);
-    }
-  }
-
-  // ✅ Méthode centralisée pour nettoyer le localStorage
-  private clearLocalStorage(): void {
-    localStorage.removeItem(this.STORAGE_KEYS.JWT);
-    localStorage.removeItem(this.STORAGE_KEYS.REFRESH);
-    localStorage.removeItem(this.STORAGE_KEYS.ROLE);
-    localStorage.removeItem(this.STORAGE_KEYS.USERNAME);
-  }
-
-  // ✅ Arrêter proprement le timer
-  private stopAutoLogout(): void {
-    if (this.logoutTimer) {
-      clearTimeout(this.logoutTimer);
-      this.logoutTimer = undefined;
-    }
+  expireSession(): void {
+    this.clearSession();
+    void this.router.navigate(['/login']);
   }
 
   startAutoLogout(expiresInHours: number): void {
-    this.stopAutoLogout(); // Nettoie l'ancien timer
-
-    // Convertir en millisecondes
-    const expiresInMs = expiresInHours * 60 * 60 * 1000;
-
-    this.logoutTimer = setTimeout(() => {
-      this.logout(true, true); // true = show message, true = isExpired
-    }, expiresInMs);
+    this.scheduleRefresh(undefined, expiresInHours);
   }
-  // ✅ Getters avec valeurs par défaut
+
   getRole(): Role | null {
-    return localStorage.getItem(this.STORAGE_KEYS.ROLE) as Role | null;
+    return this.tokenStore.getRole();
   }
 
   getUsername(): string | null {
-    return localStorage.getItem(this.STORAGE_KEYS.USERNAME);
+    return this.tokenStore.getUsername();
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.STORAGE_KEYS.JWT);
+    return this.tokenStore.getAccessToken();
   }
+
   getUsernameUUid(): string | null {
-    return localStorage.getItem(this.STORAGE_KEYS.UUID);
+    return this.tokenStore.getUuid();
   }
 
   isLoggedIn(): boolean {
     const token = this.getToken();
-    if (!token) return false;
+    return !!token && !this.isExpired(token);
+  }
 
-    // ✅ Optionnel: Vérifier si le token n'est pas expiré
+  private saveAuthData(response: AuthResponse): void {
+    this.tokenStore.saveAuth(response);
+    this.scheduleRefresh(response.token, response.expiresIn);
+  }
+
+  private scheduleRefresh(token?: string, expiresInHours?: number): void {
+    this.stopAutoLogout();
+    const expiry = token ? this.getExpiry(token) : undefined;
+    const fallbackDelay = expiresInHours ? expiresInHours * 60 * 60 * 1000 : undefined;
+    const delay = expiry ? expiry - Date.now() - 30_000 : fallbackDelay;
+    if (delay === undefined) return;
+
+    this.logoutTimer = setTimeout(() => {
+      if (!this.tokenStore.getRefreshToken()) {
+        this.expireSession();
+        return;
+      }
+      this.refreshSession().subscribe({ error: () => this.expireSession() });
+    }, Math.max(0, delay));
+  }
+
+  private stopAutoLogout(): void {
+    if (this.logoutTimer) clearTimeout(this.logoutTimer);
+    this.logoutTimer = undefined;
+  }
+
+  private clearSession(): void {
+    this.stopAutoLogout();
+    this.tokenStore.clear();
+  }
+
+  private isExpired(token: string): boolean {
+    const expiry = this.getExpiry(token);
+    return expiry === undefined || expiry <= Date.now();
+  }
+
+  private getExpiry(token: string): number | undefined {
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const exp = payload.exp * 1000; // Convertir en millisecondes
-      return Date.now() < exp;
+      const payloadPart = token.split('.')[1];
+      if (!payloadPart) return undefined;
+      const base64 = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
+      const payload = JSON.parse(atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, '=')));
+      return typeof payload.exp === 'number' ? payload.exp * 1000 : undefined;
     } catch {
-      return false;
+      return undefined;
     }
   }
 }

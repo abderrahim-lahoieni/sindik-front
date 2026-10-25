@@ -1,7 +1,8 @@
 export enum Role {
   A = 'ADMIN',
   S = 'SYNDIC',
-  R = 'RESIDENT'
+  R = 'RESIDENT',
+  F = 'FINANCE_MANAGER'
 }
 
 export interface AuthRequest {
@@ -14,12 +15,13 @@ export interface AuthResponse {
   refreshToken: string;
   username: string;
   role: Role;
-  expiresIn:number;
-  uuid:string;
+  expiresIn?: number;
+  uuid?: string | null;
 }
 
 export interface JwtPayload {
   sub: string;
   authorities: string[];
   exp: number;
+  tokenType: 'access' | 'refresh';
 }

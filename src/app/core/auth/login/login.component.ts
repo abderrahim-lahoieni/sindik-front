@@ -43,7 +43,6 @@ export class LoginComponent {
     this.auth.login(this.form.getRawValue()).subscribe({
       next: (res) => {
         this.toast.success('Connecté avec succès !');
-        this.auth.startAutoLogout(res.expiresIn);
         this.redirectByRole(res.role);
       },
       error: () => this.error.set('Identifiants invalides. Veuillez réessayer.')
@@ -56,9 +55,10 @@ export class LoginComponent {
 
   private redirectByRole(role: Role): void {
     const map: Record<Role, string> = {
-      ADMIN:    '/admin',
-      SYNDIC:   '/syndik',
-      RESIDENT: '/resident'
+      [Role.A]: '/admin',
+      [Role.S]: '/syndik',
+      [Role.R]: '/resident',
+      [Role.F]: '/access-denied'
     };
     this.router.navigate([map[role]]);
   }

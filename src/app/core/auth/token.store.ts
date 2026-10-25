@@ -1,25 +1,66 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { Role } from './models/auth.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+export const AUTH_STORAGE_KEYS = {
+  accessToken: 'jwt_token',
+  refreshToken: 'refresh_token',
+  role: 'user_role',
+  username: 'user_username',
+  uuid: 'user_uuid'
+} as const;
+
+const LEGACY_ACCESS_TOKEN_KEY = 'access_token';
+
+@Injectable({ providedIn: 'root' })
 export class TokenStore {
-  private readonly _token = signal<string | null>(null);
-
-  readonly token = this._token.asReadonly();
-
-  set(token: string): void {
-    this._token.set(token);
-    localStorage.setItem('access_token', token);
+  load(): void {
+    if (!localStorage.getItem(AUTH_STORAGE_KEYS.accessToken)) {
+      const legacyToken = localStorage.getItem(LEGACY_ACCESS_TOKEN_KEY);
+      if (legacyToken) localStorage.setItem(AUTH_STORAGE_KEYS.accessToken, legacyToken);
+    }
+    localStorage.removeItem(LEGACY_ACCESS_TOKEN_KEY);
   }
 
-  load(): void {
-    const token = localStorage.getItem('access_token');
-    this._token.set(token);
+  saveAuth(data: {
+    token: string;
+    refreshToken: string;
+    role: Role;
+    username: string;
+    uuid?: string | null;
+  }): void {
+    localStorage.setItem(AUTH_STORAGE_KEYS.accessToken, data.token);
+    localStorage.setItem(AUTH_STORAGE_KEYS.refreshToken, data.refreshToken);
+    localStorage.setItem(AUTH_STORAGE_KEYS.role, data.role);
+    localStorage.setItem(AUTH_STORAGE_KEYS.username, data.username);
+    if (data.uuid) localStorage.setItem(AUTH_STORAGE_KEYS.uuid, data.uuid);
+    else localStorage.removeItem(AUTH_STORAGE_KEYS.uuid);
+    localStorage.removeItem(LEGACY_ACCESS_TOKEN_KEY);
+  }
+
+  getAccessToken(): string | null {
+    this.load();
+    return localStorage.getItem(AUTH_STORAGE_KEYS.accessToken);
+  }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem(AUTH_STORAGE_KEYS.refreshToken);
+  }
+
+  getRole(): Role | null {
+    const role = localStorage.getItem(AUTH_STORAGE_KEYS.role);
+    return role && Object.values(Role).includes(role as Role) ? (role as Role) : null;
+  }
+
+  getUsername(): string | null {
+    return localStorage.getItem(AUTH_STORAGE_KEYS.username);
+  }
+
+  getUuid(): string | null {
+    return localStorage.getItem(AUTH_STORAGE_KEYS.uuid);
   }
 
   clear(): void {
-    this._token.set(null);
-    localStorage.removeItem('access_token');
+    Object.values(AUTH_STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
+    localStorage.removeItem(LEGACY_ACCESS_TOKEN_KEY);
   }
 }

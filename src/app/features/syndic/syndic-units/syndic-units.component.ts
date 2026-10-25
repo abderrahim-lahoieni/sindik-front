@@ -1,21 +1,20 @@
-// src/app/features/syndic/units/syndic-units.component.ts
+// Mise à jour de src/app/features/syndic/units/syndic-units.component.ts
 
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { merge, Subject } from 'rxjs';
 import { Unit, UnitFilters, UnitType } from '../../admin/units/access-data/unit.model';
 import { UnitService } from '../../admin/units/access-data/unit.service';
 import { SyndicBuildingService } from '../access-data/syndic-building.service';
-import {ButtonComponent} from '../../components/ui/buttons/button.component';
-import {TableAction, TableColumn, TableComponent} from '../../components/ui/tables/table.component';
-import {AuthService} from '../../../core/auth/auth.service';
-import {ModalService} from '../../components/ui/modals/modal.service';
+import { ButtonComponent } from '../../components/ui/buttons/button.component';
+import { TableAction, TableColumn, TableComponent } from '../../components/ui/tables/table.component';
+import { AuthService } from '../../../core/auth/auth.service';
+import { ModalService } from '../../components/ui/modals/modal.service';
 import ToastService from '../../components/ui/toast/toast.service';
-import type { CardConfig } from '../../components/ui/cards/card-grid.component';
-import type { Resident } from '../../admin/residents/access-data/resident.model';
+import { CreateUnitSyndicModalComponent } from './modals/create-unit-syndic.component';
 
 @Component({
   selector: 'app-syndic-units',
@@ -24,87 +23,9 @@ import type { Resident } from '../../admin/residents/access-data/resident.model'
     CommonModule,
     ReactiveFormsModule,
     TableComponent,
+    ButtonComponent
   ],
-  template: `
-    <div class="syndic-units">
-      <div class="page-header">
-        <div class="header-left">
-          <h1>Mes Unités</h1>
-          <p class="subtitle">Gérez les unités de vos bâtiments</p>
-        </div>
-      </div>
-
-      <!-- Stats -->
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-icon">🏠</div>
-          <div class="stat-content">
-            <div class="stat-value">{{ units().length }}</div>
-            <div class="stat-label">Total unités</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Filters -->
-      <div class="filters-card">
-        <form [formGroup]="searchForm" class="filters-grid">
-          <div class="filter-group">
-            <label>Bâtiment</label>
-            <select [formControl]="searchForm.controls.buildingUuid" class="filter-select">
-              <option *ngFor="let opt of buildingOptions()" [value]="opt.value">
-                {{ opt.label }}
-              </option>
-            </select>
-          </div>
-
-          <div class="filter-group">
-            <label>Type</label>
-            <select [formControl]="searchForm.controls.type" class="filter-select">
-              <option *ngFor="let opt of typeOptions" [value]="opt.value">
-                {{ opt.label }}
-              </option>
-            </select>
-          </div>
-
-          <div class="filter-group">
-            <label>Occupation</label>
-            <select [formControl]="searchForm.controls.occupied" class="filter-select">
-              <option *ngFor="let opt of occupancyOptions" [value]="opt.value">
-                {{ opt.label }}
-              </option>
-            </select>
-          </div>
-
-          <div class="filter-group filter-actions">
-            <button
-              type="button"
-              class="btn-reset"
-              (click)="searchForm.reset()"
-              [disabled]="!searchForm.dirty">
-              Réinitialiser
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Table -->
-      <div class="table-container">
-        <app-table
-          [columns]="columns"
-          [data]="units()"
-          [actions]="actions"
-          [showActions]="true"
-          [loading]="loading()"
-          [striped]="true"
-          [hoverable]="true"
-          [pageSize]="10"
-          [showPagination]="true"
-          emptyMessage="Aucune unité trouvée"
-        >
-        </app-table>
-      </div>
-    </div>
-  `,
+  templateUrl: './syndic-units.component.html',
   styleUrls: ['./syndic-units.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -113,6 +34,7 @@ export class SyndicUnitsComponent implements OnInit {
   private readonly syndicBuildingService = inject(SyndicBuildingService);
   private readonly auth = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly modal = inject(ModalService);
   private readonly toast = inject(ToastService);
   private readonly fb = inject(FormBuilder);
@@ -129,7 +51,6 @@ export class SyndicUnitsComponent implements OnInit {
 
   private readonly refreshSubject = new Subject<void>();
   private readonly searchSubject = new Subject<UnitFilters>();
-  
 
   columns: TableColumn[] = [
     { key: 'unitNumber', label: 'N° Unité', sortable: true, width: '120px' },
@@ -178,7 +99,7 @@ export class SyndicUnitsComponent implements OnInit {
       label: 'Pièces',
       sortable: true,
       width: '80px',
-      align: 'center',
+      align: 'center'
     },
     {
       key: 'isOccupied',
@@ -220,7 +141,6 @@ export class SyndicUnitsComponent implements OnInit {
     this.loadMyBuildings();
     this.setupSearch();
 
-    // Charger avec filtre si présent dans l'URL
     this.route.queryParams.subscribe(params => {
       if (params['buildingUuid']) {
         this.searchForm.patchValue({ buildingUuid: params['buildingUuid'] });
@@ -281,7 +201,6 @@ export class SyndicUnitsComponent implements OnInit {
   }
 
   private fetchUnits(filters?: UnitFilters) {
-    // Le backend filtre automatiquement par le syndic connecté
     return this.unitService.getUnits({
       buildingUuid: filters?.buildingUuid,
       type: filters?.type,
@@ -291,6 +210,18 @@ export class SyndicUnitsComponent implements OnInit {
 
   loadUnits(): void {
     this.refreshSubject.next();
+  }
+
+  // NOUVEAU: Créer une unité
+  openCreateModal(): void {
+    this.modal.open(CreateUnitSyndicModalComponent, {
+      width: '800px',
+      data: { mode: 'create' }
+    }).afterClosed().subscribe((result: Unit) => {
+      if (result) {
+        this.loadUnits();
+      }
+    });
   }
 
   toggleOccupancy(unit: Unit): void {

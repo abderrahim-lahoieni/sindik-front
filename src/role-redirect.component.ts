@@ -19,6 +19,8 @@ export class RoleRedirectComponent implements OnInit {
       this.router.navigate(['/syndik']);
     } else if (role === Role.R) {
       this.router.navigate(['/resident']);
+    } else if (role === Role.F) {
+      this.router.navigate(['/access-denied']);
     } else {
       this.router.navigate(['/login']);
     }

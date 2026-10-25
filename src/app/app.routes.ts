@@ -3,6 +3,11 @@ import {authGuard} from './core/auth/auth.guard';
 import {Role} from './core/auth/models/auth.model';
 import { RoleRedirectComponent } from '../role-redirect.component';
 export const routes: Routes = [
+  {
+    path: 'access-denied',
+    loadComponent: () =>
+      import('./core/auth/access-denied.component').then(m => m.AccessDeniedComponent)
+  },
    {
     path: '',
     component: RoleRedirectComponent
