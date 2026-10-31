@@ -12,15 +12,19 @@ import { MatButtonModule } from '@angular/material/button';
     <div class="modal-container">
 
       <!-- Header -->
-      <div class="modal-header" *ngIf="title || showCloseButton">
-        <h2 class="modal-title" *ngIf="title">{{ title }}</h2>
+      <div class="modal-header" *ngIf="title || subtitle || showCloseButton">
+        <div class="title-group" *ngIf="title || subtitle">
+          <h2 class="modal-title" *ngIf="title">{{ title }}</h2>
+          <p class="modal-subtitle" *ngIf="subtitle">{{ subtitle }}</p>
+        </div>
         <button
           mat-icon-button
           *ngIf="showCloseButton"
           (click)="close()"
           class="close-button"
+          aria-label="Fermer la fenêtre"
         >
-          <mat-icon>close</mat-icon>
+          <mat-icon aria-hidden="true">close</mat-icon>
         </button>
       </div>
 
@@ -37,48 +41,56 @@ import { MatButtonModule } from '@angular/material/button';
     </div>
   `,
   styles: [`
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
     .modal-container {
-      font-family: 'Poppins', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       display: flex;
       flex-direction: column;
-      max-height: 90vh;
+      width: 100%;
+      max-height: min(86dvh, 820px);
+      min-height: 0;
+      overflow: hidden;
+      background: #fff;
 
       .modal-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 24px 24px 0 24px;
-        border-bottom: 1px solid #e1e8ed;
-        padding-bottom: 16px;
-        margin-bottom: 24px;
+        flex: 0 0 auto;
+        padding: 20px 24px;
+        border-bottom: 1px solid #e7eeea;
+        margin: 0;
 
         .modal-title {
           margin: 0;
-          font-size: 20px;
-          font-weight: 600;
-          color: #2c3e50;
+          font-size: 18px;
+          font-weight: 700;
+          letter-spacing: -.02em;
+          color: #203b33;
         }
 
+        .modal-subtitle { margin: 5px 0 0; color: #718079; font-size: 12px; line-height: 1.45; }
+
         .close-button {
-          color: #8896ab;
-          transition: all 0.3s ease;
+          color: #718079;
+          transition: color .16s ease, background-color .16s ease;
 
           &:hover {
-            color: #ffc312;
-            background: rgba(255, 195, 18, 0.1);
+            color: #176b57;
+            background: #eaf5f1;
           }
         }
       }
 
       .modal-body {
-        flex: 1;
-        padding: 0 24px;
+        flex: 1 1 auto;
+        min-height: 0;
+        padding: 20px 24px;
         overflow-y: auto;
+        overscroll-behavior: contain;
 
         &.with-footer {
-          margin-bottom: 24px;
+          margin-bottom: 0;
         }
 
         &::-webkit-scrollbar {
@@ -86,11 +98,11 @@ import { MatButtonModule } from '@angular/material/button';
         }
 
         &::-webkit-scrollbar-track {
-          background: #f5f6fa;
+          background: #f5f8f6;
         }
 
         &::-webkit-scrollbar-thumb {
-          background: #e1e8ed;
+          background: #d5e1da;
           border-radius: 10px;
 
           &:hover {
@@ -100,17 +112,26 @@ import { MatButtonModule } from '@angular/material/button';
       }
 
       .modal-footer {
+        flex: 0 0 auto;
         display: flex;
         justify-content: flex-end;
         gap: 12px;
-        padding: 16px 24px 24px 24px;
-        border-top: 1px solid #e1e8ed;
+        padding: 14px 24px 20px;
+        border-top: 1px solid #e7eeea;
+        background: #fff;
+      }
+
+      @media (max-width: 600px) {
+        .modal-header { padding: 16px 18px; }
+        .modal-body { padding: 16px 18px; }
+        .modal-footer { padding: 12px 18px 16px; gap: 8px; }
       }
     }
   `]
 })
 export class ModalComponent {
   @Input() title: string = '';
+  @Input() subtitle: string = '';
   @Input() showCloseButton: boolean = true;
   @Input() hasFooter: boolean = false;
 

@@ -7,6 +7,7 @@
       <input
         type="text"
         placeholder="Rechercher..."
+        aria-label="Rechercher dans le tableau"
         [value]="searchQuery()"
         (input)="onSearchChange($any($event.target).value)"
         class="search-input"
@@ -35,6 +36,7 @@
       [class.striped]="striped"
       [class.hoverable]="hoverable"
       class="data-table"
+      aria-label="Données du tableau"
     >
 
       <!-- Checkbox Column -->
@@ -98,6 +100,7 @@
                   mat-icon-button
             [matMenuTriggerFor]="actionsMenu"
             class="actions-button"
+            aria-label="Actions de la ligne"
             (click)="$event.stopPropagation()"
           >
             <mat-icon>more_vert</mat-icon>
@@ -136,7 +139,7 @@
       <tr class="mat-row" *matNoDataRow>
         <td [attr.colspan]="displayedColumns.length" class="empty-state">
           <div class="empty-content">
-            <mat-icon class="empty-icon">inbox</mat-icon>
+            <mat-icon class="empty-icon" aria-hidden="true">inbox</mat-icon>
             <p class="empty-message">{{ emptyMessage }}</p>
           </div>
         </td>

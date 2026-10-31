@@ -2,6 +2,7 @@
 
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
@@ -21,6 +22,7 @@ import { CreateUnitSyndicModalComponent } from './modals/create-unit-syndic.comp
   standalone: true,
   imports: [
     CommonModule,
+    MatIconModule,
     ReactiveFormsModule,
     TableComponent,
     ButtonComponent
@@ -109,10 +111,37 @@ export class SyndicUnitsComponent implements OnInit {
       format: (value: boolean) => value
         ? '<span class="badge badge-danger">Occupé</span>'
         : '<span class="badge badge-success">Disponible</span>'
+    },
+    {
+      key: 'isActive',
+      label: 'Statut',
+      width: '110px',
+      align: 'center',
+      format: (value: boolean) => value
+        ? '<span class="badge badge-success">Actif</span>'
+        : '<span class="badge badge-muted">Inactif</span>'
     }
   ];
 
   actions: TableAction[] = [
+    {
+      icon: 'edit',
+      label: 'Modifier',
+      color: 'primary',
+      callback: (row: Unit) => this.openEditModal(row)
+    },
+    {
+      icon: 'delete_outline',
+      label: 'Supprimer',
+      color: 'danger',
+      callback: (row: Unit) => this.deleteUnit(row)
+    },
+    {
+      icon: (row: Unit) => row.isActive ? 'visibility_off' : 'visibility',
+      label: (row: Unit) => row.isActive ? 'Désactiver' : 'Activer',
+      color: 'warning',
+      callback: (row: Unit) => this.toggleStatus(row)
+    },
     {
       icon: (row: Unit) => row.isOccupied ? 'meeting_room' : 'no_meeting_room',
       label: (row: Unit) => row.isOccupied ? 'Libérer' : 'Marquer occupé',
@@ -215,12 +244,48 @@ export class SyndicUnitsComponent implements OnInit {
   // NOUVEAU: Créer une unité
   openCreateModal(): void {
     this.modal.open(CreateUnitSyndicModalComponent, {
-      width: '800px',
+      width: '760px',
+      maxWidth: '92vw',
+      maxHeight: '86vh',
       data: { mode: 'create' }
     }).afterClosed().subscribe((result: Unit) => {
       if (result) {
         this.loadUnits();
       }
+    });
+  }
+
+  openEditModal(unit: Unit): void {
+    this.modal.open(CreateUnitSyndicModalComponent, {
+      width: '760px',
+      maxWidth: '92vw',
+      maxHeight: '86vh',
+      data: { mode: 'edit', unit }
+    }).afterClosed().subscribe((result: Unit) => {
+      if (result) this.loadUnits();
+    });
+  }
+
+  deleteUnit(unit: Unit): void {
+    this.modal.confirmDelete(`l’unité ${unit.unitNumber}`).subscribe(confirmed => {
+      if (!confirmed) return;
+      this.unitService.deleteUnit(unit.uuid).subscribe({
+        next: () => {
+          this.toast.success('Unité supprimée avec succès');
+          this.loadUnits();
+        },
+        error: () => this.toast.error('Impossible de supprimer cette unité')
+      });
+    });
+  }
+
+  toggleStatus(unit: Unit): void {
+    this.unitService.toggleUnitStatus(unit.uuid).subscribe({
+      next: () => {
+        this.toast.success(unit.isActive ? 'Unité désactivée' : 'Unité activée');
+        this.loadUnits();
+      },
+      error: () => this.toast.error('Impossible de modifier le statut de cette unité')
     });
   }
 

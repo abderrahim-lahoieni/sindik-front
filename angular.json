@@ -27,12 +27,17 @@
             ],
             "styles": [
               "src/material-theme.scss",
-              "src/styles.scss",
-              "@angular/material/prebuilt-themes/indigo-pink.css"
+              "src/styles.scss"
             ]
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environements/environement.ts",
+                  "with": "src/environements/environement.production.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",

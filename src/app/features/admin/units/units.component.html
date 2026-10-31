@@ -23,7 +23,7 @@
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon total">
-          <span class="emoji">🏠</span>
+          <mat-icon class="emoji" aria-hidden="true">home_work</mat-icon>
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ units().length }}</div>
@@ -34,6 +34,16 @@
 
     <!-- Filters Card -->
     <div class="filters-card">
+      <div class="filter-group filter-toolbar">
+        <span class="filter-caption">Filtres</span>
+        <button
+          type="button"
+          class="btn-reset"
+          (click)="searchForm.reset()"
+          [disabled]="!searchForm.dirty">
+          Réinitialiser
+        </button>
+      </div>
       <form [formGroup]="searchForm" class="filters-grid">
 
         <!-- Residence filter -->
@@ -75,17 +85,6 @@
             </option>
           </select>
         </div>        
-        <!-- Reset button -->
-        <div class="filter-group filter-actions">
-          <button
-            type="button"
-            class="btn-reset"
-            (click)="searchForm.reset()"
-            [disabled]="!searchForm.dirty">
-            Réinitialiser
-          </button>
-        </div>
-
       </form>
     </div>
 

@@ -30,12 +30,20 @@ import { Contract } from '../../contracts/access-data/contract.model';
   template: `
     <app-modal
       title="Créer un nouveau paiement"
+      subtitle="Sélectionnez un contrat, puis renseignez les détails du règlement."
       [showCloseButton]="true"
       [hasFooter]="true"
     >
-      <form [formGroup]="form" (ngSubmit)="submit()">
+      <form [formGroup]="form" (ngSubmit)="onFormSubmit()">
+
+        <div class="wizard-progress" aria-label="Progression du formulaire">
+          <div class="wizard-progress-heading"><span>Étape {{ currentStep() }} sur {{ totalSteps }}</span><strong>{{ stepLabels[currentStep() - 1] }}</strong></div>
+          <div class="wizard-track" role="progressbar" aria-label="Progression du formulaire" aria-valuemin="1" [attr.aria-valuemax]="totalSteps" [attr.aria-valuenow]="currentStep()"><span [style.width.%]="(currentStep() / totalSteps) * 100"></span></div>
+          <div class="wizard-steps" aria-hidden="true"><span *ngFor="let label of stepLabels; let i = index" [class.active]="currentStep() === i + 1" [class.complete]="currentStep() > i + 1">{{ label }}</span></div>
+        </div>
         
         <!-- Section Contrat -->
+        <section class="wizard-step" *ngIf="currentStep() === 1" aria-label="Sélection du contrat">
         <div class="section-title">Sélection du contrat</div>
         
         <div class="grid grid-cols-2 gap-4">
@@ -86,8 +94,10 @@ import { Contract } from '../../contracts/access-data/contract.model';
             <span class="info-value">{{ selectedContract()?.monthlyRent?.toLocaleString('fr-FR') }} MAD</span>
           </div>
         </div>
+        </section>
 
         <!-- Section Paiement -->
+        <section class="wizard-step" *ngIf="currentStep() === 2" aria-label="Détails du paiement">
         <div class="section-title">Détails du paiement</div>
         
         <div class="grid grid-cols-2 gap-4">
@@ -139,7 +149,10 @@ import { Contract } from '../../contracts/access-data/contract.model';
             />
           </div>
         </div>
+        </section>
 
+        <section class="wizard-step" *ngIf="currentStep() === 3" aria-label="Dates et modalités">
+        <div class="section-title">Dates et modalités</div>
         <!-- Dates -->
         <div class="grid grid-cols-2 gap-4">
           <div class="date-field">
@@ -183,9 +196,6 @@ import { Contract } from '../../contracts/access-data/contract.model';
           </div>
         </div>
 
-        <!-- Section Supplémentaire -->
-        <div class="section-title">Informations supplémentaires</div>
-
         <div class="grid grid-cols-3 gap-4">
           <!-- Méthode de paiement -->
           <div class="form-group">
@@ -223,7 +233,11 @@ import { Contract } from '../../contracts/access-data/contract.model';
             />
           </div>
         </div>
+        </section>
 
+        <section class="wizard-step" *ngIf="currentStep() === 4" aria-label="Informations complémentaires">
+        <!-- Section Supplémentaire -->
+        <div class="section-title">Informations complémentaires</div>
         <!-- Toggle récurrent -->
         <div class="toggle-field">
           <label class="toggle-label">Paiement récurrent</label>
@@ -251,25 +265,18 @@ import { Contract } from '../../contracts/access-data/contract.model';
             placeholder="Notes sur le paiement..."
           ></textarea>
         </div>
+        </section>
 
       </form>
 
       <!-- Footer -->
-      <div modal-footer class="flex justify-end gap-2">
-        <app-button
-          size="medium"
-          (btnClick)="cancel()">
-          Annuler
-        </app-button>
-        <app-button
-          variant="primary"
-          size="medium"
-          [loading]="loading()"
-          type="submit"
-          [disabled]="form.invalid || loading()"
-          (btnClick)="submit()">
-          Créer le paiement
-        </app-button>
+      <div modal-footer class="modal-actions">
+        <div class="actions-left">
+          <app-button *ngIf="currentStep() === 1" size="medium" variant="ghost" (btnClick)="cancel()">Annuler</app-button>
+          <app-button *ngIf="currentStep() > 1" size="medium" variant="secondary" icon="arrow_back" (btnClick)="previousStep()">Précédent</app-button>
+        </div>
+        <app-button *ngIf="currentStep() < totalSteps" size="medium" variant="primary" icon="arrow_forward" iconPosition="right" [disabled]="loadingContracts()" (btnClick)="nextStep()">Continuer</app-button>
+        <app-button *ngIf="currentStep() === totalSteps" variant="primary" size="medium" icon="check" [loading]="loading()" [disabled]="form.invalid || loading()" (btnClick)="submit()">Créer le paiement</app-button>
       </div>
     </app-modal>
   `,
@@ -282,7 +289,7 @@ import { Contract } from '../../contracts/access-data/contract.model';
       letter-spacing: 0.5px;
       margin: 1.5rem 0 1rem 0;
       padding-bottom: 0.5rem;
-      border-bottom: 2px solid #ffc312;
+      border-bottom: 2px solid #176b57;
     }
 
     .grid {
@@ -326,13 +333,13 @@ import { Contract } from '../../contracts/access-data/contract.model';
       border: 2px solid #e5e7eb;
       border-radius: 0.5rem;
       font-size: 0.875rem;
-      font-family: 'Poppins', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       transition: all 0.2s;
 
       &:focus {
         outline: none;
-        border-color: #ffc312;
-        box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.1);
+        border-color: #176b57;
+        box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.1);
       }
 
       &:disabled {
@@ -368,13 +375,13 @@ import { Contract } from '../../contracts/access-data/contract.model';
         border: 2px solid #e5e7eb;
         border-radius: 0.5rem;
         font-size: 0.875rem;
-        font-family: 'Poppins', sans-serif;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
         transition: all 0.2s;
 
         &:focus {
           outline: none;
-          border-color: #ffc312;
-          box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.1);
+          border-color: #176b57;
+          box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.1);
         }
       }
     }
@@ -438,7 +445,7 @@ import { Contract } from '../../contracts/access-data/contract.model';
     }
 
     .loading-text {
-      color: #ffc312;
+      color: #176b57;
       font-size: 0.75rem;
       margin-top: 0.25rem;
       font-weight: 500;
@@ -461,6 +468,43 @@ import { Contract } from '../../contracts/access-data/contract.model';
     .gap-2 {
       gap: 0.5rem;
     }
+
+    .wizard-progress { margin: 0 0 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid #e8eeea; }
+    .wizard-progress-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; color: #7a8981; font-size: .72rem; }
+    .wizard-progress-heading strong { color: #176b57; font-size: .78rem; font-weight: 700; }
+    .wizard-track { height: 5px; overflow: hidden; border-radius: 99px; background: #eaf0ec; }
+    .wizard-track span { display: block; height: 100%; border-radius: inherit; background: #23836a; transition: width .2s ease; }
+    .wizard-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+    .wizard-steps span { overflow: hidden; color: #94a099; font-size: .62rem; font-weight: 600; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+    .wizard-steps span.active, .wizard-steps span.complete { color: #176b57; }
+    .wizard-step { min-height: 200px; animation: step-in .18s ease-out; }
+    @keyframes step-in { from { opacity: .65; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-actions { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px; }
+    .actions-left { display: flex; align-items: center; }
+    .section-title { margin: .4rem 0 .9rem; padding-bottom: .55rem; border-bottom: 1px solid #e4ebe7; color: #35584b; font-size: .74rem; letter-spacing: .08em; }
+    .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .gap-4 { gap: .85rem; }
+    .form-group, .date-field { min-width: 0; margin-bottom: .8rem; }
+    .form-label, .date-label { color: #43564d; font-size: .8rem; margin-bottom: .4rem; }
+    .form-input, .form-select, .form-textarea, .date-input { box-sizing: border-box; min-height: 42px; padding: .65rem .75rem; border: 1px solid #d7e1db; border-radius: 8px; background: #fff; color: #203b33; font-size: .85rem; transition: border-color .16s ease, box-shadow .16s ease; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus, .date-input:focus { border-color: #176b57; box-shadow: 0 0 0 3px rgba(23,107,87,.12); }
+    .form-textarea { min-height: 88px; line-height: 1.5; }
+    .toggle-field { min-height: 44px; padding: .65rem .8rem; border: 1px solid #e4ebe7; border-radius: 8px; background: #f8faf9; }
+    .toggle-field .toggle-label { color: #43564d; font-size: .82rem; font-weight: 600; }
+    .contract-info { padding: .75rem 1rem; border: 1px solid #dce9e2; border-radius: 10px; background: #f5faf7; }
+    .contract-info .info-row { padding: .45rem 0; border-color: #e4eee8; }
+    .contract-info .info-label { color: #718079; font-size: .78rem; }
+    .contract-info .info-value { color: #263a32; font-size: .82rem; }
+
+    @media (max-width: 600px) {
+      .wizard-steps { display: none; }
+      .wizard-step { min-height: 0; }
+      .grid-cols-2, .grid-cols-3 { grid-template-columns: 1fr; }
+      .modal-actions { gap: 6px; }
+      .actions-left, .modal-actions > app-button { flex: 1; }
+      .modal-actions app-button { width: 100%; }
+    }
   `]
 })
 export class CreatePaymentModalComponent implements OnInit {
@@ -474,6 +518,15 @@ export class CreatePaymentModalComponent implements OnInit {
 
   loading = signal(false);
   loadingContracts = signal(false);
+  currentStep = signal(1);
+  readonly totalSteps = 4;
+  readonly stepLabels = ['Contrat', 'Montants', 'Échéances', 'Compléments'];
+  private readonly stepFields = [
+    ['buildingUuid', 'contractUuid'],
+    ['type', 'status', 'amount'],
+    ['dueDate'],
+    []
+  ];
   
   buildingOptions = signal<{ value: string; label: string }[]>([]);
   contractOptions = signal<{ value: string; label: string }[]>([]);
@@ -604,9 +657,39 @@ export class CreatePaymentModalComponent implements OnInit {
     });
   }
 
+  nextStep(): void {
+    const fields = this.stepFields[this.currentStep() - 1] || [];
+    const invalidFields = fields.filter(name => {
+      const control = this.form.get(name);
+      control?.markAsTouched();
+      return control?.invalid;
+    });
+
+    if (invalidFields.length) {
+      this.toast.warning('Veuillez compléter les champs obligatoires de cette étape');
+      return;
+    }
+
+    if (this.currentStep() < this.totalSteps) this.currentStep.update(step => step + 1);
+  }
+
+  previousStep(): void {
+    if (this.currentStep() > 1) this.currentStep.update(step => step - 1);
+  }
+
+  onFormSubmit(): void {
+    if (this.currentStep() < this.totalSteps) {
+      this.nextStep();
+      return;
+    }
+    this.submit();
+  }
+
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      const firstInvalidStep = this.stepFields.findIndex(fields => fields.some(name => this.form.get(name)?.invalid));
+      if (firstInvalidStep >= 0) this.currentStep.set(firstInvalidStep + 1);
       this.toast.warning('Veuillez remplir tous les champs obligatoires');
       return;
     }

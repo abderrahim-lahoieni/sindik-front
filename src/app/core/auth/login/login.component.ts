@@ -18,6 +18,8 @@ import ToastService from '../../../features/components/ui/toast/toast.service';
 })
 export class LoginComponent {
 
+  readonly currentYear = new Date().getFullYear();
+
   private readonly fb     = inject(FormBuilder);
   private readonly auth   = inject(AuthService);
   private readonly toast  = inject(ToastService);

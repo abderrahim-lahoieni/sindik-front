@@ -1,16 +1,15 @@
 // src/app/components/ui/cards/card-grid.component.scss
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-$primary: #ffc312;
+$primary: #176b57;
 $success: #2ecc71;
 $danger: #ff4757;
 $warning: #f39c12;
 
 $bg-card: #ffffff;
-$text-dark: #0f172a;
-$text-muted: #64748b;
-$border: #e2e8f0;
+$text-dark: #182a27;
+$text-muted: #7f8a94;
+$border: #e8edf0;
 
 $shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
 $shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
@@ -18,7 +17,7 @@ $shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
 $transition: all 0.3s ease;
 
 .card-grid-container {
-  font-family: 'Poppins', sans-serif;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
 
   // ========== LOADING STATE ==========
   .loading-state {
@@ -235,7 +234,7 @@ $transition: all 0.3s ease;
               }
 
               &.badge-secondary {
-                background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+                background: linear-gradient(135deg, #f1f5f9 0%, #e8edf0 100%);
                 color: #475569;
                 border: 1px solid #94a3b8;
               }
@@ -282,7 +281,7 @@ $transition: all 0.3s ease;
 ::ng-deep .mat-mdc-menu-panel {
   .mat-mdc-menu-content {
     .mat-mdc-menu-item {
-      font-family: 'Poppins', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       font-size: 14px;
 
       mat-icon {

@@ -2,6 +2,7 @@
 
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { merge, Subject } from 'rxjs';
@@ -23,6 +24,7 @@ import { ManageBuildingSyndicsModalComponent } from './modals/manage-building-sy
   standalone: true,
   imports: [
     CommonModule,
+    MatIconModule,
     ReactiveFormsModule,
     TableComponent,
     ButtonComponent
@@ -214,6 +216,8 @@ export class BuildingsComponent implements OnInit {
   openCreateModal(): void {
     this.modal.open(CreateBuildingModalComponent, {
       width: '700px',
+      maxWidth: '92vw',
+      maxHeight: '86vh',
       data: { mode: 'create' }
     }).afterClosed().subscribe((result: Building) => {
       if (result) {
@@ -225,6 +229,8 @@ export class BuildingsComponent implements OnInit {
   editBuilding(building: Building): void {
     this.modal.open(EditBuildingModalComponent, {
       width: '700px',
+      maxWidth: '92vw',
+      maxHeight: '86vh',
       data: { building, mode: 'edit' }
     }).afterClosed().subscribe((result: Building) => {
       if (result) {

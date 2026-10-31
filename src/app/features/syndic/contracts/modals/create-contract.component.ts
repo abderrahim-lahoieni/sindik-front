@@ -30,12 +30,27 @@ import { ContractType, ContractStatus, PaymentFrequency } from '../access-data/c
   template: `
     <app-modal
       title="Créer un nouveau contrat"
+      subtitle="Renseignez le logement, les parties et les conditions du contrat."
       [showCloseButton]="true"
       [hasFooter]="true"
     >
-      <form [formGroup]="form" (ngSubmit)="submit()">
+      <form [formGroup]="form" (ngSubmit)="onFormSubmit()">
+
+        <div class="wizard-progress" aria-label="Progression du formulaire">
+          <div class="wizard-progress-heading">
+            <span>Étape {{ currentStep() }} sur {{ totalSteps }}</span>
+            <strong>{{ stepLabels[currentStep() - 1] }}</strong>
+          </div>
+          <div class="wizard-track" role="progressbar" aria-label="Progression du formulaire" aria-valuemin="1" [attr.aria-valuemax]="totalSteps" [attr.aria-valuenow]="currentStep()">
+            <span [style.width.%]="(currentStep() / totalSteps) * 100"></span>
+          </div>
+          <div class="wizard-steps" aria-hidden="true">
+            <span *ngFor="let label of stepLabels; let i = index" [class.active]="currentStep() === i + 1" [class.complete]="currentStep() > i + 1">{{ label }}</span>
+          </div>
+        </div>
         
         <!-- Section Localisation -->
+        <section class="wizard-step" *ngIf="currentStep() === 1" aria-label="Localisation du logement">
         <div class="section-title">Localisation</div>
         
         <div class="grid grid-cols-2 gap-4">
@@ -87,8 +102,10 @@ import { ContractType, ContractStatus, PaymentFrequency } from '../access-data/c
           <div *ngIf="loadingResidents()" class="loading-text">Chargement...</div>
           <span *ngIf="residentError" class="error-text">{{ residentError }}</span>
         </div>
+        </section>
 
         <!-- Section Type et Statut -->
+        <section class="wizard-step" *ngIf="currentStep() === 2" aria-label="Informations du contrat">
         <div class="section-title">Informations du contrat</div>
         
         <div class="grid grid-cols-2 gap-4">
@@ -115,29 +132,21 @@ import { ContractType, ContractStatus, PaymentFrequency } from '../access-data/c
 
         <!-- Section Dates -->
         <div class="section-title">Période du contrat</div>
-        
         <div class="grid grid-cols-2 gap-4">
           <div class="date-field">
             <label class="date-label">Date de début <span class="required">*</span></label>
-            <input 
-              type="date" 
-              formControlName="startDate" 
-              class="date-input"
-            />
+            <input type="date" formControlName="startDate" class="date-input" />
             <span *ngIf="startDateError" class="error-text">{{ startDateError }}</span>
           </div>
-
           <div class="date-field">
             <label class="date-label">Date de fin (optionnel)</label>
-            <input 
-              type="date" 
-              formControlName="endDate" 
-              class="date-input"
-            />
+            <input type="date" formControlName="endDate" class="date-input" />
           </div>
         </div>
+        </section>
 
         <!-- Section Financière -->
+        <section class="wizard-step" *ngIf="currentStep() === 3" aria-label="Conditions financières">
         <div class="section-title">Informations financières</div>
         
         <div class="grid grid-cols-2 gap-4">
@@ -199,8 +208,10 @@ import { ContractType, ContractStatus, PaymentFrequency } from '../access-data/c
           <label class="toggle-label">Caution déjà payée</label>
           <app-toggle formControlName="depositPaid"></app-toggle>
         </div>
+        </section>
 
         <!-- Section Options -->
+        <section class="wizard-step" *ngIf="currentStep() === 4" aria-label="Options du contrat">
         <div class="section-title">Options</div>
         
         <div class="grid grid-cols-2 gap-4">
@@ -244,38 +255,44 @@ import { ContractType, ContractStatus, PaymentFrequency } from '../access-data/c
             placeholder="Notes additionnelles..."
           ></textarea>
         </div>
+        </section>
 
       </form>
 
       <!-- Footer -->
-      <div modal-footer class="flex justify-end gap-2">
-        <app-button
-          size="medium"
-          (btnClick)="cancel()">
-          Annuler
-        </app-button>
-        <app-button
-          variant="primary"
-          size="medium"
-          [loading]="loading()"
-          type="submit"
-          [disabled]="form.invalid || loading()"
-          (btnClick)="submit()">
-          Créer le contrat
-        </app-button>
+      <div modal-footer class="modal-actions">
+        <div class="actions-left">
+          <app-button *ngIf="currentStep() === 1" size="medium" variant="ghost" (btnClick)="cancel()">Annuler</app-button>
+          <app-button *ngIf="currentStep() > 1" size="medium" variant="secondary" icon="arrow_back" (btnClick)="previousStep()">Précédent</app-button>
+        </div>
+        <app-button *ngIf="currentStep() < totalSteps" size="medium" variant="primary" icon="arrow_forward" iconPosition="right" [disabled]="loadingUnits() || loadingResidents()" (btnClick)="nextStep()">Continuer</app-button>
+        <app-button *ngIf="currentStep() === totalSteps" variant="primary" size="medium" icon="check" [loading]="loading()" [disabled]="form.invalid || loading()" (btnClick)="submit()">Créer le contrat</app-button>
       </div>
     </app-modal>
   `,
   styles: [`
+    .wizard-progress { margin: 0 0 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid #e8eeea; }
+    .wizard-progress-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; color: #7a8981; font-size: .72rem; }
+    .wizard-progress-heading strong { color: #176b57; font-size: .78rem; font-weight: 700; }
+    .wizard-track { height: 5px; overflow: hidden; border-radius: 99px; background: #eaf0ec; }
+    .wizard-track span { display: block; height: 100%; border-radius: inherit; background: #23836a; transition: width .2s ease; }
+    .wizard-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 8px; }
+    .wizard-steps span { overflow: hidden; color: #94a099; font-size: .62rem; font-weight: 600; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+    .wizard-steps span.active, .wizard-steps span.complete { color: #176b57; }
+    .wizard-step { min-height: 205px; animation: step-in .18s ease-out; }
+    @keyframes step-in { from { opacity: .65; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-actions { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px; }
+    .actions-left { display: flex; align-items: center; }
+
     .section-title {
-      font-size: 0.875rem;
+      font-size: 0.74rem;
       font-weight: 700;
-      color: #1f2937;
+      color: #35584b;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin: 1.5rem 0 1rem 0;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid #ffc312;
+      letter-spacing: 0.08em;
+      margin: 1.35rem 0 0.85rem;
+      padding-bottom: 0.55rem;
+      border-bottom: 1px solid #e4ebe7;
     }
 
     .grid {
@@ -283,23 +300,24 @@ import { ContractType, ContractStatus, PaymentFrequency } from '../access-data/c
     }
 
     .grid-cols-2 {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .gap-4 {
-      gap: 1rem;
+      gap: 0.9rem;
     }
 
     .form-group {
-      margin-bottom: 1rem;
+      min-width: 0;
+      margin-bottom: 0.85rem;
     }
 
     .form-label {
       display: block;
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       font-weight: 600;
-      color: #374151;
-      margin-bottom: 0.5rem;
+      color: #43564d;
+      margin-bottom: 0.4rem;
 
       .required {
         color: #ef4444;
@@ -311,17 +329,21 @@ import { ContractType, ContractStatus, PaymentFrequency } from '../access-data/c
     .form-select,
     .form-textarea {
       width: 100%;
-      padding: 0.75rem;
-      border: 2px solid #e5e7eb;
-      border-radius: 0.5rem;
-      font-size: 0.875rem;
-      font-family: 'Poppins', sans-serif;
-      transition: all 0.2s;
+      box-sizing: border-box;
+      min-height: 42px;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid #d7e1db;
+      border-radius: 8px;
+      background: #fff;
+      color: #203b33;
+      font-size: 0.85rem;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      transition: border-color .16s ease, box-shadow .16s ease;
 
       &:focus {
         outline: none;
-        border-color: #ffc312;
-        box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.1);
+        border-color: #176b57;
+        box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.12);
       }
 
       &:disabled {
@@ -333,6 +355,8 @@ import { ContractType, ContractStatus, PaymentFrequency } from '../access-data/c
 
     .form-textarea {
       resize: vertical;
+      min-height: 88px;
+      line-height: 1.5;
     }
 
     .date-field {
@@ -353,17 +377,21 @@ import { ContractType, ContractStatus, PaymentFrequency } from '../access-data/c
 
       .date-input {
         width: 100%;
-        padding: 0.75rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 0.5rem;
-        font-size: 0.875rem;
-        font-family: 'Poppins', sans-serif;
-        transition: all 0.2s;
+        box-sizing: border-box;
+        min-height: 42px;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid #d7e1db;
+        border-radius: 8px;
+        background: #fff;
+        color: #203b33;
+        font-size: 0.85rem;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        transition: border-color .16s ease, box-shadow .16s ease;
 
         &:focus {
           outline: none;
-          border-color: #ffc312;
-          box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.1);
+          border-color: #176b57;
+          box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.12);
         }
       }
     }
@@ -372,16 +400,17 @@ import { ContractType, ContractStatus, PaymentFrequency } from '../access-data/c
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.75rem;
-      border: 1px solid #e5e7eb;
-      border-radius: 0.5rem;
-      background: #f9fafb;
-      margin-bottom: 1rem;
+      min-height: 44px;
+      padding: 0.65rem 0.8rem;
+      border: 1px solid #e4ebe7;
+      border-radius: 8px;
+      background: #f8faf9;
+      margin-bottom: 0.85rem;
 
       .toggle-label {
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #374151;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #43564d;
         margin: 0;
       }
     }
@@ -395,7 +424,7 @@ import { ContractType, ContractStatus, PaymentFrequency } from '../access-data/c
     }
 
     .loading-text {
-      color: #ffc312;
+      color: #176b57;
       font-size: 0.75rem;
       margin-top: 0.25rem;
       font-weight: 500;
@@ -418,6 +447,16 @@ import { ContractType, ContractStatus, PaymentFrequency } from '../access-data/c
     .gap-2 {
       gap: 0.5rem;
     }
+
+    @media (max-width: 600px) {
+      .wizard-steps { display: none; }
+      .wizard-step { min-height: 0; }
+      .grid-cols-2 { grid-template-columns: 1fr; }
+      .toggle-field { grid-column: 1 / -1; }
+      .modal-actions { gap: 6px; }
+      .actions-left, .modal-actions > app-button { flex: 1; }
+      .modal-actions app-button { width: 100%; }
+    }
   `]
 })
 export class CreateContractModalComponent implements OnInit {
@@ -433,6 +472,15 @@ export class CreateContractModalComponent implements OnInit {
   loading = signal(false);
   loadingUnits = signal(false);
   loadingResidents = signal(false);
+  currentStep = signal(1);
+  readonly totalSteps = 4;
+  readonly stepLabels = ['Localisation', 'Contrat', 'Finances', 'Options'];
+  private readonly stepFields = [
+    ['buildingUuid', 'unitUuid', 'residentUuid'],
+    ['type', 'status', 'startDate'],
+    ['monthlyRent', 'paymentFrequency'],
+    []
+  ];
   
   buildingOptions = signal<{ value: string; label: string }[]>([]);
   unitOptions = signal<{ value: string; label: string }[]>([]);
@@ -566,9 +614,39 @@ export class CreateContractModalComponent implements OnInit {
     });
   }
 
+  nextStep(): void {
+    const fields = this.stepFields[this.currentStep() - 1] || [];
+    const invalidFields = fields.filter(name => {
+      const control = this.form.get(name);
+      control?.markAsTouched();
+      return control?.invalid;
+    });
+
+    if (invalidFields.length) {
+      this.toast.warning('Veuillez compléter les champs obligatoires de cette étape');
+      return;
+    }
+
+    if (this.currentStep() < this.totalSteps) this.currentStep.update(step => step + 1);
+  }
+
+  previousStep(): void {
+    if (this.currentStep() > 1) this.currentStep.update(step => step - 1);
+  }
+
+  onFormSubmit(): void {
+    if (this.currentStep() < this.totalSteps) {
+      this.nextStep();
+      return;
+    }
+    this.submit();
+  }
+
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      const firstInvalidStep = this.stepFields.findIndex(fields => fields.some(name => this.form.get(name)?.invalid));
+      if (firstInvalidStep >= 0) this.currentStep.set(firstInvalidStep + 1);
       this.toast.warning('Veuillez remplir tous les champs obligatoires');
       return;
     }

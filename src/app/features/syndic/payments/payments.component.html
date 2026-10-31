@@ -26,7 +26,7 @@
       <!-- Total Amount -->
       <div class="stat-card total">
         <div class="stat-icon">
-          <span class="emoji">💰</span>
+          <mat-icon class="emoji" aria-hidden="true">payments</mat-icon>
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ totalAmount().toLocaleString('fr-FR') }}</div>
@@ -37,7 +37,7 @@
       <!-- Total Paid -->
       <div class="stat-card paid">
         <div class="stat-icon">
-          <span class="emoji">✅</span>
+          <mat-icon class="emoji" aria-hidden="true">check_circle</mat-icon>
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ totalPaid().toLocaleString('fr-FR') }}</div>
@@ -48,7 +48,7 @@
       <!-- Total Pending -->
       <div class="stat-card pending">
         <div class="stat-icon">
-          <span class="emoji">⏳</span>
+          <mat-icon class="emoji" aria-hidden="true">schedule</mat-icon>
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ totalPending().toLocaleString('fr-FR') }}</div>
@@ -59,7 +59,7 @@
       <!-- Overdue Count -->
       <div class="stat-card overdue">
         <div class="stat-icon">
-          <span class="emoji">⚠️</span>
+          <mat-icon class="emoji" aria-hidden="true">warning</mat-icon>
         </div>
         <div class="stat-content">
           <div class="stat-value">{{ overdueCount() }}</div>

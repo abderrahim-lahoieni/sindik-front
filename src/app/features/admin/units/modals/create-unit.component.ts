@@ -223,14 +223,14 @@ import {UnitType} from '../access-data/unit.model';
       border: 1px solid #e5e7eb;
       border-radius: 0.5rem;
       font-size: 0.875rem;
-      font-family: 'Poppins', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       resize: vertical;
       transition: all 0.2s;
 
       &:focus {
         outline: none;
-        border-color: #ffc312;
-        box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.1);
+        border-color: #176b57;
+        box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.1);
       }
 
       &::placeholder {

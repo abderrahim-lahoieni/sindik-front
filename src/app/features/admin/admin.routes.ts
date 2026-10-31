@@ -32,11 +32,6 @@ export const ADMIN_ROUTES: Routes = [
           import('./buildings/buildings.component').then(m => m.BuildingsComponent)
       },
       {
-        path: 'units',
-        loadComponent: () =>
-          import('./units/units.component').then(m => m.UnitsComponent)
-      },
-      {
         path: 'residents',
         loadComponent: () =>
           import('./residents/residents.component').then(m => m.ResidentsComponent)

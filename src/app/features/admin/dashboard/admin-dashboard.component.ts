@@ -17,7 +17,6 @@ import { CreateResidenceModalComponent } from '../residences/modals/create-resid
 import type { Residence } from '../residences/ access-data/residence.model';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateBuildingModalComponent } from '../buildings/modals/create-building.component';
-import { CreateUnitModalComponent } from '../units/modals/create-unit.component';
 import { CreateUserModalComponent } from '../users/modals/create-user.component';
 import { Role } from '../../../core/auth/models/auth.model';
 
@@ -112,15 +111,6 @@ Math: any;
       gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
     },
     {
-      title: 'Nouvelle Unité',
-      description: 'Créer une unité',
-      icon: 'meeting_room',
-      action: () => this.openCreateUnitModal(), // 🔥 ici on appelle la fonction
-      route: '/admin/units',
-      color: '#4facfe',
-      gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
-    },
-    {
       title: 'Nouvel Utilisateur',
       description: 'Créer un utilisateur',
       action: () => this.openCreateUserModal(), // 🔥 ici on appelle la fonction
@@ -184,7 +174,9 @@ handleQuickAction(action: QuickAction): void {
 }
 openCreateModal(): void {
   this.modal.open(CreateResidenceModalComponent, {
-    width: '700px',
+    width: '760px',
+    maxWidth: '92vw',
+    maxHeight: '86vh',
     data: { mode: 'create' }
   }).afterClosed().subscribe((result: Residence) => {
     if (result) {
@@ -196,22 +188,13 @@ openCreateModal(): void {
 openCreateBuildingModal(): void {
   this.modal.open(CreateBuildingModalComponent, {
     width: '700px',
+    maxWidth: '92vw',
+    maxHeight: '86vh',
     data: { mode: 'create' }
   }).afterClosed().subscribe((result: Residence) => {
     if (result) {
       this.router.navigate(['/admin/buildings']);
       this.toast.success('Bâtiment créé avec succès');
-    }
-  });
-}
-openCreateUnitModal(): void {
-  this.modal.open(CreateUnitModalComponent, {
-    width: '700px',
-    data: { mode: 'create' }
-  }).afterClosed().subscribe((result: Residence) => {
-    if (result) {
-      this.router.navigate(['/admin/units']);
-      this.toast.success('Unité créée avec succès');
     }
   });
 }
@@ -294,7 +277,7 @@ ownersPercentage = computed(() => {
       return acc;
     }, {});
 
-    const colors = ['#667eea', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#30cfd0', '#ffc312'];
+    const colors = ['#667eea', '#f093fb', '#4facfe', '#43e97b', '#fa709a', '#30cfd0', '#176b57'];
     const total = units.length;
 
     const chartData: ChartData[] = Object.entries(types).map(([key, value]: any, index) => ({

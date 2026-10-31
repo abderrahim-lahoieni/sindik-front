@@ -1,24 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-$primary: #ffc312;
-$text-dark: #2c3e50;
-$text-muted: #8896ab;
-$border: #e1e8ed;
-$background: #f5f6fa;
+$primary: #176b57;
+$text-dark: #344b44;
+$text-muted: #7f8a94;
+$border: #e8edf0;
+$background: #f5f7fa;
 $white: #ffffff;
-$hover-bg: rgba(255, 195, 18, 0.08);
-$selected-bg: rgba(255, 195, 18, 0.15);
-$header-bg: rgba(0, 0, 0, 0.85);
-$success: #2ecc71;
-$danger: #ff4757;
-$warning: #f39c12;
-$transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+$hover-bg: rgba(23, 107, 87, 0.08);
+$selected-bg: #eaf5f1;
+$header-bg: #f6f8f7;
+$success: #18794e;
+$danger: #bd3b42;
+$warning: #a66308;
+$transition: color .16s ease, background-color .16s ease, border-color .16s ease, box-shadow .16s ease;
 
 .table-container {
-  font-family: 'Poppins', sans-serif;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   background: $white;
+  border: 1px solid $border;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 12px rgba(24, 48, 39, 0.045);
   overflow: hidden;
 
   // Toolbar
@@ -26,7 +26,7 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 24px;
+    padding: 16px 20px;
     border-bottom: 1px solid $border;
     background: $white;
 
@@ -53,9 +53,9 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         border: 1px solid $border;
         border-radius: 8px;
         font-size: 14px;
-        font-family: 'Poppins', sans-serif;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
         color: $text-dark;
-        background: $background;
+        background: $white;
         transition: $transition;
 
         &::placeholder {
@@ -66,7 +66,7 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           outline: none;
           border-color: $primary;
           background: $white;
-          box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.1);
+          box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.1);
         }
       }
     }
@@ -82,7 +82,7 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   .table-wrapper {
     position: relative;
     overflow-x: auto;
-    min-height: 300px;
+    min-height: 220px;
 
     // Loading Overlay
     .loading-overlay {
@@ -109,16 +109,17 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
       // Header
       .mat-mdc-header-row {
-        background: linear-gradient(
-            180deg,
-            rgba(255, 195, 18, 0.08),
-            rgba(255, 195, 18, 0.02)
-        );
-        border-bottom: 1px solid rgba(255, 195, 18, 0.25);
+        background: $header-bg;
+        border-bottom: 1px solid $border;
 
         .mat-mdc-header-cell {
-          color: #7a5c00;
-          font-weight: 600;
+          padding: 12px 16px;
+          color: #65746d;
+          font-size: 10px;
+          font-weight: 700;
+          letter-spacing: .055em;
+          text-transform: uppercase;
+          white-space: nowrap;
         }
       }
 
@@ -128,9 +129,11 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         cursor: pointer;
 
         .mat-mdc-cell {
-          font-size: 14px;
-          color: $text-dark;
-          padding: 16px 20px;
+          height: 56px;
+          font-size: 13px;
+          color: #35453e;
+          padding: 12px 16px;
+          line-height: 1.45;
           border-bottom: 1px solid $border;
 
           &:first-child {
@@ -147,20 +150,21 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         // Hover
-        &.hoverable:hover {
-          background: $hover-bg;
-        }
-
         // Selected
         &.selected {
           background: $selected-bg;
         }
       }
 
+      &.hoverable .mat-mdc-row:hover {
+        background: #f5faf7;
+      }
+      &.hoverable .mat-mdc-row.selected:hover { background: $selected-bg; }
+
       // Striped
       &.striped {
         .mat-mdc-row:nth-child(even) {
-          background: rgba(0, 0, 0, 0.02);
+          background: #fbfcfb;
 
           &:hover {
             background: $hover-bg;
@@ -190,14 +194,14 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           }
 
           .mdc-checkbox__checkmark {
-            color: $text-dark;
+            color: $white;
           }
         }
       }
 
       // Actions Cell
       .actions-cell {
-        width: 80px;
+        width: 64px;
         text-align: center;
 
         .actions-button {
@@ -206,7 +210,7 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
           &:hover {
             color: $primary;
-            background: rgba(255, 195, 18, 0.1);
+            background: rgba(23, 107, 87, 0.1);
           }
         }
       }
@@ -223,16 +227,16 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           gap: 12px;
 
           .empty-icon {
-            font-size: 64px;
-            width: 64px;
-            height: 64px;
+            font-size: 42px;
+            width: 42px;
+            height: 42px;
             color: $text-muted;
             opacity: 0.5;
           }
 
           .empty-message {
             margin: 0;
-            font-size: 16px;
+            font-size: 14px;
             color: $text-muted;
           }
         }
@@ -246,13 +250,14 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     background: $white;
 
     .mat-mdc-paginator-container {
-      padding: 12px 24px;
-      font-family: 'Poppins', sans-serif;
+      min-height: 56px;
+      padding: 4px 16px;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
     }
 
     .mat-mdc-icon-button {
       &:hover {
-        background: rgba(255, 195, 18, 0.1);
+        background: rgba(23, 107, 87, 0.1);
         color: $primary;
       }
     }
@@ -261,13 +266,23 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       color: $text-dark;
     }
   }
+
+  @media (max-width: 680px) {
+    border-radius: 10px;
+    .table-toolbar { flex-wrap: wrap; gap: 12px; padding: 14px; }
+    .table-toolbar .search-box { flex: 1 1 100%; max-width: none; }
+    .table-toolbar .toolbar-actions { width: 100%; justify-content: flex-end; }
+    .table-wrapper { min-height: 180px; }
+    .data-table { min-width: 680px; }
+    ::ng-deep .mat-mdc-paginator .mat-mdc-paginator-container { justify-content: center; padding: 4px 8px; }
+  }
 }
 
 // Action Menu Items
 ::ng-deep .mat-mdc-menu-panel {
   .mat-mdc-menu-content {
     .mat-mdc-menu-item {
-      font-family: 'Poppins', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       font-size: 14px;
 
       mat-icon {
@@ -276,7 +291,7 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       &:hover {
-        background: rgba(255, 195, 18, 0.08);
+        background: rgba(23, 107, 87, 0.08);
 
         mat-icon {
           color: $primary;

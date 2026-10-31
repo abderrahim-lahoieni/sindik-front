@@ -32,6 +32,7 @@ import {ResidenceType} from '../ access-data/residence.model';
   template: `
     <app-modal
       title="Ajouter une résidence"
+      subtitle="Renseignez les informations principales de la résidence."
       [showCloseButton]="true"
       [hasFooter]="true"
     >
@@ -113,7 +114,7 @@ import {ResidenceType} from '../ access-data/residence.model';
           <textarea
             formControlName="description"
             class="form-textarea"
-            rows="4"
+            rows="3"
             placeholder="Décrivez la résidence..."
           ></textarea>
         </div>
@@ -145,11 +146,11 @@ import {ResidenceType} from '../ access-data/residence.model';
     }
 
     .gap-4 {
-      gap: 1rem;
+      gap: 0.8rem;
     }
 
     .form-group {
-      margin-bottom: 1.5rem;
+      margin: 0.6rem 0 0.8rem;
     }
 
     .form-label {
@@ -161,19 +162,21 @@ import {ResidenceType} from '../ access-data/residence.model';
     }
 
     .form-textarea {
+      box-sizing: border-box;
       width: 100%;
-      padding: 0.75rem;
+      min-height: 82px;
+      padding: 0.7rem 0.8rem;
       border: 1px solid #e5e7eb;
       border-radius: 0.5rem;
       font-size: 0.875rem;
-      font-family: 'Poppins', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       resize: vertical;
       transition: all 0.2s;
 
       &:focus {
         outline: none;
-        border-color: #ffc312;
-        box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.1);
+        border-color: #176b57;
+        box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.1);
       }
 
       &::placeholder {
@@ -191,6 +194,13 @@ import {ResidenceType} from '../ access-data/residence.model';
 
     .gap-2 {
       gap: 0.5rem;
+    }
+
+    :host ::ng-deep app-input .input-wrapper { gap: 5px; }
+    :host ::ng-deep app-input .input-footer { min-height: 0; }
+    .grid-cols-2 > app-input { min-width: 0; }
+    @media (max-width: 600px) {
+      .grid-cols-2 { grid-template-columns: minmax(0, 1fr); }
     }
   `]
 })

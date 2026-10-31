@@ -2,6 +2,7 @@
 
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { merge, Subject } from 'rxjs';
@@ -21,6 +22,7 @@ import {CreateResidenceModalComponent} from './modals/create-residence.component
   standalone: true,
   imports: [
     CommonModule,
+    MatIconModule,
     ReactiveFormsModule,
     TableComponent,
     ButtonComponent
@@ -196,7 +198,9 @@ export class ResidencesComponent implements OnInit {
 
   openCreateModal(): void {
     this.modal.open(CreateResidenceModalComponent, {
-      width: '700px',
+      width: '760px',
+      maxWidth: '92vw',
+      maxHeight: '86vh',
       data: { mode: 'create' }
     }).afterClosed().subscribe((result: Residence) => {
       if (result) {

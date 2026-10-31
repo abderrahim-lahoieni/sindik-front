@@ -169,23 +169,23 @@ interface SyndicOption {
         font-weight: 600;
         transition: all 0.2s;
 
-        &.assigned { color: #ffc312; }
+        &.assigned { color: #176b57; }
         &.available { color: #10b981; }
       }
 
       &:hover {
-        border-color: #ffc312;
-        color: #ffc312;
+        border-color: #176b57;
+        color: #176b57;
 
         .pill-count {
-          background: #ffc312;
+          background: #176b57;
           color: white;
         }
       }
 
       &.active {
-        background: #ffc312;
-        border-color: #ffc312;
+        background: #176b57;
+        border-color: #176b57;
         color: white;
 
         .pill-count {
@@ -210,7 +210,7 @@ interface SyndicOption {
       width: 20px;
       height: 20px;
       border: 2px solid #e2e8f0;
-      border-top-color: #ffc312;
+      border-top-color: #176b57;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
     }
@@ -235,7 +235,7 @@ interface SyndicOption {
       
       /* Scrollbar large et facile à attraper */
       scrollbar-width: auto;
-      scrollbar-color: #ffc312 #e2e8f0;
+      scrollbar-color: #176b57 #e2e8f0;
       
       &::-webkit-scrollbar {
         width: 12px; /* Plus large pour faciliter le scroll */
@@ -249,7 +249,7 @@ interface SyndicOption {
       }
 
       &::-webkit-scrollbar-thumb {
-        background: #ffc312;
+        background: #176b57;
         border-radius: 20px;
         border: 3px solid #f1f5f9; /* Crée un espace autour */
         min-height: 50px; /* Minimum height for easy grabbing */
@@ -320,7 +320,7 @@ interface SyndicOption {
       
       /* Scrollbar styles */
       scrollbar-width: auto;
-      scrollbar-color: #ffc312 #e2e8f0;
+      scrollbar-color: #176b57 #e2e8f0;
       
       &::-webkit-scrollbar {
         width: 12px;
@@ -334,7 +334,7 @@ interface SyndicOption {
       }
 
       &::-webkit-scrollbar-thumb {
-        background: #ffc312;
+        background: #176b57;
         border-radius: 20px;
         border: 3px solid #f1f5f9;
         min-height: 50px;
@@ -365,13 +365,13 @@ interface SyndicOption {
       min-height: 50px;  /* Hauteur minimale */
 
       &:hover {
-        border-color: #ffc312;
+        border-color: #176b57;
         background: #fffaf0;
         transform: translateX(2px);
       }
 
       &.selected {
-        border-color: #ffc312;
+        border-color: #176b57;
         background: #fffaf0;
       }
 
@@ -435,13 +435,13 @@ interface SyndicOption {
         font-weight: bold;
 
         &.assigned {
-          background: #ffc312;
+          background: #176b57;
           color: white;
         }
       }
 
       &.selected .avatar-mini {
-        background: #ffc312;
+        background: #176b57;
         color: white;
       }
     }
@@ -474,13 +474,13 @@ interface SyndicOption {
       margin-right: 0.5rem; /* Espace pour le scrollbar */
 
       &:hover {
-        border-color: #ffc312;
+        border-color: #176b57;
         background: #fffaf0;
         transform: translateX(2px);
       }
 
       &.selected {
-        border-color: #ffc312;
+        border-color: #176b57;
         background: #fffaf0;
       }
 
@@ -544,13 +544,13 @@ interface SyndicOption {
         font-weight: bold;
 
         &.assigned {
-          background: #ffc312;
+          background: #176b57;
           color: white;
         }
       }
 
       &.selected .avatar-mini {
-        background: #ffc312;
+        background: #176b57;
         color: white;
       }
     }    
@@ -582,7 +582,7 @@ interface SyndicOption {
       color: #64748b;
 
       .selected-badge {
-        background: #ffc312;
+        background: #176b57;
         color: white;
         width: 22px;
         height: 22px;
@@ -617,8 +617,8 @@ interface SyndicOption {
       transition: all 0.2s;
 
       &:hover {
-        border-color: #ffc312;
-        color: #ffc312;
+        border-color: #176b57;
+        color: #176b57;
         transform: rotate(180deg);
       }
     }

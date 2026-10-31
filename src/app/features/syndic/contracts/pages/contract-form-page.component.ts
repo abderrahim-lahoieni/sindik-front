@@ -3,6 +3,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ContractService } from '../access-data/contract.service';
 import { ResidentService } from '../../../admin/residents/access-data/resident.service';
@@ -19,6 +20,7 @@ import { Contract, ContractType, ContractStatus, PaymentFrequency } from '../acc
   standalone: true,
   imports: [
     CommonModule,
+    MatIconModule,
     ReactiveFormsModule,
     ButtonComponent
   ],

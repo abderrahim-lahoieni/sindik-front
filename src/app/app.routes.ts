@@ -36,7 +36,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { roles: [Role.R] },
     loadChildren: () =>
-      import('./features/syndic/sindik.routes').then(m => m.SYNDIK_ROUTES)
+      import('./features/resident/resident.routes').then(m => m.RESIDENT_ROUTES)
   },
   // 🔹 Correction ici
   { path: '**', redirectTo: '', pathMatch: 'full' }

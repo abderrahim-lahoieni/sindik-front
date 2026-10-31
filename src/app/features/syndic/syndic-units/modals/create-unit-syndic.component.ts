@@ -3,7 +3,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ButtonComponent } from '../../../components/ui/buttons/button.component';
 import { InputComponent } from '../../../components/ui/Input/input.component';
 import { ModalComponent } from '../../../components/ui/modals/modal.component';
@@ -12,7 +12,7 @@ import { UnitService } from '../../../admin/units/access-data/unit.service';
 import { SyndicBuildingService } from '../../access-data/syndic-building.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import ToastService from '../../../components/ui/toast/toast.service';
-import { UnitType } from '../../../admin/units/access-data/unit.model';
+import { Unit, UnitType } from '../../../admin/units/access-data/unit.model';
 
 @Component({
   selector: 'app-create-unit-syndic-modal',
@@ -27,13 +27,21 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
   ],
   template: `
     <app-modal
-      title="Créer une nouvelle unité"
+      [title]="isEdit ? 'Modifier l’unité' : 'Nouvelle unité'"
+      [subtitle]="isEdit ? 'Mettez à jour les caractéristiques du logement.' : 'Renseignez les informations du logement en quelques étapes.'"
       [showCloseButton]="true"
       [hasFooter]="true"
       (closeModal)="cancel()"
     >
-      <form [formGroup]="form" (ngSubmit)="submit()" class="unit-form">
+      <form [formGroup]="form" (ngSubmit)="onFormSubmit()" class="unit-form">
+        <div class="wizard-progress" aria-label="Progression du formulaire">
+          <div class="wizard-heading"><span>Étape {{ currentStep() }} sur {{ totalSteps }}</span><strong>{{ stepLabels[currentStep() - 1] }}</strong></div>
+          <div class="wizard-track" role="progressbar" aria-label="Progression du formulaire" aria-valuemin="1" [attr.aria-valuemax]="totalSteps" [attr.aria-valuenow]="currentStep()"><span [style.width.%]="currentStep() / totalSteps * 100"></span></div>
+          <div class="wizard-labels" aria-hidden="true"><span *ngFor="let label of stepLabels; let i = index" [class.active]="currentStep() === i + 1" [class.complete]="currentStep() > i + 1">{{ label }}</span></div>
+        </div>
 
+        <section *ngIf="currentStep() === 1" class="wizard-step" aria-label="Bâtiment et identification">
+          <h3>Localisation et identification</h3>
         <!-- Bâtiment (seulement les bâtiments gérés) -->
         <div class="form-group full-width">
              <app-input
@@ -46,6 +54,7 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
             [control]="form.get('buildingUuid')!"
             [errorMessage]="buildingError"
             [disabled]="loadingBuildings()"
+            (selectChange)="onBuildingChange($event)"
           ></app-input>
         </div>
 
@@ -70,7 +79,10 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
             [errorMessage]="typeError"
           ></app-input>
         </div>
+        </section>
 
+        <section *ngIf="currentStep() === 2" class="wizard-step" aria-label="Caractéristiques">
+          <h3>Caractéristiques de l’unité</h3>
         <!-- Étage et Surface - Utilisation de app-input -->
         <div class="grid grid-cols-2 gap-4">
           <app-input
@@ -110,7 +122,10 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
             [control]="form.get('numberOfBathrooms')!"
           ></app-input>
         </div>
+        </section>
 
+        <section *ngIf="currentStep() === 3" class="wizard-step" aria-label="Options et description">
+          <h3>Options et description</h3>
         <!-- Options (Balcon, Parking) -->
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div class="toggle-field">
@@ -143,26 +158,46 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
             placeholder="Décrivez l'unité (optionnel)..."
           ></textarea>
         </div>
+        </section>
 
       </form>
 
       <!-- Footer -->
-      <div modal-footer class="modal-footer">
+      <div modal-footer class="unit-actions">
         <app-button
+          *ngIf="currentStep() === 1"
+          variant="ghost"
           size="medium"
           (btnClick)="cancel()">
-          <span class="material-icons">close</span>
           Annuler
         </app-button>
         <app-button
+          *ngIf="currentStep() > 1"
+          variant="secondary"
+          size="medium"
+          icon="arrow_back"
+          (btnClick)="previousStep()">
+          Précédent
+        </app-button>
+        <app-button
+          *ngIf="currentStep() < totalSteps"
           variant="primary"
           size="medium"
+          icon="arrow_forward"
+          iconPosition="right"
+          [disabled]="loadingBuildings()"
+          (btnClick)="nextStep()">
+          Continuer
+        </app-button>
+        <app-button
+          *ngIf="currentStep() === totalSteps"
+          variant="primary"
+          size="medium"
+          icon="check"
           [loading]="loading()"
-          type="submit"
           [disabled]="form.invalid || loading()"
           (btnClick)="submit()">
-          <span class="material-icons" *ngIf="!loading()">add</span>
-          Créer l'unité
+          {{ isEdit ? 'Enregistrer les modifications' : 'Créer l’unité' }}
         </app-button>
       </div>
     </app-modal>
@@ -170,8 +205,8 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
   styles: [`
     :host {
       display: block;
-      --primary-color: #ffc312;
-      --primary-hover: #ffb400;
+      --primary-color: #176b57;
+      --primary-hover: #21836a;
       --error-color: #ef4444;
       --success-color: #10b981;
       --text-primary: #0f172a;
@@ -189,28 +224,10 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
     }
 
     .unit-form {
-      padding: 1.5rem;
-      max-height: 70vh;
-      overflow-y: auto;
-      background: white;
-
-      &::-webkit-scrollbar {
-        width: 6px;
-      }
-
-      &::-webkit-scrollbar-track {
-        background: var(--bg-light);
-        border-radius: 3px;
-      }
-
-      &::-webkit-scrollbar-thumb {
-        background: #d1d5db;
-        border-radius: 3px;
-
-        &:hover {
-          background: #9ca3af;
-        }
-      }
+      min-width: 0;
+      padding: 0;
+      overflow: visible;
+      background: transparent;
     }
 
     /* En-tête du formulaire */
@@ -261,7 +278,7 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
     }
 
     .grid-cols-2 {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .gap-4 {
@@ -278,10 +295,11 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
 
     /* Groupes de formulaire */
     .form-group {
+      min-width: 0;
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
-      margin-bottom: 1.25rem;
+      margin-bottom: 0.75rem;
 
       &.full-width {
         grid-column: span 2;
@@ -321,7 +339,7 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
       border: 2px solid var(--border-color);
       border-radius: var(--radius-md);
       font-size: 0.875rem;
-      font-family: 'Poppins', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       font-weight: 500;
       color: var(--text-primary);
       background: white;
@@ -336,7 +354,7 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
       &:focus {
         outline: none;
         border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.15);
+        box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.15);
         transform: translateY(-1px);
       }
 
@@ -381,12 +399,15 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
     }
 
     .form-textarea {
+      display: block;
+      box-sizing: border-box;
       width: 100%;
+      max-width: 100%;
       padding: 0.75rem 1rem;
       border: 2px solid var(--border-color);
       border-radius: var(--radius-md);
       font-size: 0.875rem;
-      font-family: 'Poppins', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       font-weight: 500;
       color: var(--text-primary);
       background: white;
@@ -397,7 +418,7 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
       &:focus {
         outline: none;
         border-color: var(--primary-color);
-        box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.15);
+        box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.15);
       }
 
       &::placeholder {
@@ -464,18 +485,18 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.75rem 1rem;
-      border: 2px solid var(--border-color);
+      min-height: 54px;
+      padding: 0.65rem 0.8rem;
+      border: 1px solid var(--border-color);
       border-radius: var(--radius-md);
-      background: var(--bg-light);
+      background: #f7faf8;
       transition: var(--transition);
       cursor: pointer;
 
       &:hover {
-        border-color: rgba(255, 195, 18, 0.4);
+        border-color: rgba(23, 107, 87, 0.4);
         background: white;
         box-shadow: var(--shadow-sm);
-        transform: translateY(-1px);
       }
 
       .toggle-label {
@@ -531,14 +552,12 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
     }
 
     /* Footer */
-    .modal-footer {
+    .unit-actions {
       display: flex;
       justify-content: flex-end;
       align-items: center;
       gap: 0.75rem;
-      padding: 1rem 1.5rem;
-      background: var(--bg-light);
-      border-top: 1px solid var(--border-color);
+      width: 100%;
 
       app-button {
         display: inline-flex;
@@ -592,13 +611,8 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
 
     /* Responsive */
     @media (max-width: 640px) {
-      .unit-form {
-        padding: 1rem;
-        max-height: 80vh;
-      }
-
       .grid-cols-2 {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
       }
 
       .full-width {
@@ -619,13 +633,7 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
         }
       }
 
-      .modal-footer {
-        padding: 0.75rem 1rem;
-        
-        app-button {
-          flex: 1;
-        }
-      }
+      .unit-actions app-button { flex: 1; }
 
       .toggle-field {
         padding: 0.75rem;
@@ -633,10 +641,6 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
     }
 
     @media (max-width: 480px) {
-      .unit-form {
-        padding: 0.75rem;
-      }
-
       .form-group {
         margin-bottom: 1rem;
       }
@@ -652,6 +656,32 @@ import { UnitType } from '../../../admin/units/access-data/unit.model';
         font-size: 0.8125rem;
       }
     }
+
+    .wizard-progress { margin-bottom: 18px; padding-bottom: 13px; border-bottom: 1px solid #e7eeea; }
+    .wizard-heading { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; color: #829087; font-size: .72rem; }
+    .wizard-heading strong { color: #176b57; font-size: .78rem; }
+    .wizard-track { height: 5px; overflow: hidden; border-radius: 99px; background: #eaf0ec; }
+    .wizard-track span { display: block; height: 100%; border-radius: inherit; background: #23836a; transition: width .2s ease; }
+    .wizard-labels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+    .wizard-labels span { color: #94a099; font-size: .66rem; font-weight: 600; text-align: center; }
+    .wizard-labels span.active, .wizard-labels span.complete { color: #176b57; }
+    .wizard-step { min-height: 245px; animation: step-in .18s ease-out; }
+    .wizard-step h3 { margin: 0 0 16px; color: #35584b; font-size: .74rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+    :host ::ng-deep app-input { display: block; min-width: 0; max-width: 100%; }
+    :host ::ng-deep app-input .input-wrapper { gap: 5px; }
+    :host ::ng-deep app-input .input-footer { min-height: 0; }
+    :host ::ng-deep .modal-body { overflow-x: hidden; }
+    .unit-actions { justify-content: space-between; }
+    .unit-actions app-button:last-child { margin-left: auto; }
+    :host ::ng-deep app-input .input-icon-left { color: #fff; }
+    :host ::ng-deep app-input .input-icon-left mat-icon { color: #fff; }
+    @keyframes step-in { from { opacity: .7; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 600px) {
+      .wizard-labels { display: none; }
+      .wizard-step { min-height: 0; }
+      .unit-actions { gap: 8px; }
+      .unit-actions app-button { min-width: 0; }
+    }
   `]
 })
 export class CreateUnitSyndicModalComponent implements OnInit {
@@ -661,9 +691,20 @@ export class CreateUnitSyndicModalComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly toast = inject(ToastService);
   private readonly dialogRef = inject(MatDialogRef<CreateUnitSyndicModalComponent>);
+  private readonly data = inject<{ mode?: 'create' | 'edit'; unit?: Unit }>(MAT_DIALOG_DATA, { optional: true });
+
+  get isEdit(): boolean { return this.data?.mode === 'edit' && !!this.data.unit; }
 
   loading = signal(false);
   loadingBuildings = signal(false);
+  currentStep = signal(1);
+  readonly totalSteps = 3;
+  readonly stepLabels = ['Identification', 'Caractéristiques', 'Options'];
+  private readonly stepFields = [
+    ['buildingUuid', 'unitNumber', 'type'],
+    ['floorNumber', 'area', 'numberOfRooms', 'numberOfBathrooms'],
+    ['description']
+  ];
   
   buildingOptions = signal<{ value: string; label: string }[]>([]);
   selectedBuilding = signal<any>(null);
@@ -694,6 +735,22 @@ export class CreateUnitSyndicModalComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    if (this.isEdit && this.data?.unit) {
+      const unit = this.data.unit;
+      this.form.patchValue({
+        buildingUuid: unit.buildingUuid,
+        unitNumber: unit.unitNumber,
+        type: unit.type,
+        floorNumber: unit.floorNumber,
+        area: unit.area,
+        numberOfRooms: unit.numberOfRooms,
+        numberOfBathrooms: unit.numberOfBathrooms,
+        hasBalcony: unit.hasBalcony,
+        hasParking: unit.hasParking,
+        description: unit.description,
+        isOccupied: unit.isOccupied
+      });
+    }
     this.loadMyBuildings();
   }
 
@@ -743,9 +800,30 @@ export class CreateUnitSyndicModalComponent implements OnInit {
     });
   }
 
+  nextStep(): void {
+    const fields = this.stepFields[this.currentStep() - 1] || [];
+    fields.forEach(field => this.form.get(field)?.markAsTouched());
+    if (fields.some(field => this.form.get(field)?.invalid)) {
+      this.toast.warning('Veuillez compléter les champs requis de cette étape');
+      return;
+    }
+    if (this.currentStep() < this.totalSteps) this.currentStep.update(step => step + 1);
+  }
+
+  previousStep(): void {
+    if (this.currentStep() > 1) this.currentStep.update(step => step - 1);
+  }
+
+  onFormSubmit(): void {
+    if (this.currentStep() < this.totalSteps) this.nextStep();
+    else this.submit();
+  }
+
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      const firstInvalidStep = this.stepFields.findIndex(fields => fields.some(field => this.form.get(field)?.invalid));
+      if (firstInvalidStep >= 0) this.currentStep.set(firstInvalidStep + 1);
       this.toast.warning('Veuillez remplir tous les champs obligatoires');
       return;
     }
@@ -765,17 +843,21 @@ export class CreateUnitSyndicModalComponent implements OnInit {
       hasParking: formValue.hasParking || false,
       description: formValue.description?.trim() || null,
       isOccupied: formValue.isOccupied || false,
-      isActive: formValue.isActive ?? true
+      ...(this.isEdit ? {} : { isActive: true })
     };
 
-    this.unitService.createUnit(request as any).subscribe({
+    const request$ = this.isEdit && this.data?.unit
+      ? this.unitService.updateUnit(this.data.unit.uuid, request as any)
+      : this.unitService.createUnit(request as any);
+
+    request$.subscribe({
       next: (response) => {
-        this.toast.success('Unité créée avec succès');
+        this.toast.success(this.isEdit ? 'Unité modifiée avec succès' : 'Unité créée avec succès');
         this.dialogRef.close(response);
       },
       error: (err) => {
         console.error('Erreur création:', err);
-        const errorMessage = err.error?.error || err.error?.message || 'Erreur lors de la création';
+        const errorMessage = err.error?.error || err.error?.message || (this.isEdit ? 'Erreur lors de la modification' : 'Erreur lors de la création');
         this.toast.error(errorMessage);
         this.loading.set(false);
       }

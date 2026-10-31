@@ -1,19 +1,17 @@
 // src/app/features/syndic/contracts/pages/contract-form-page.component.scss
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
-$primary: #ffc312;
+$primary: #176b57;
 $success: #2ecc71;
 $danger: #ff4757;
 $warning: #f39c12;
 $info: #3498db;
 
-$bg-page: #f8fafc;
+$bg-page: #f5f7fa;
 $bg-card: #ffffff;
-$text-dark: #0f172a;
-$text-muted: #64748b;
-$border: #e2e8f0;
+$text-dark: #182a27;
+$text-muted: #7f8a94;
+$border: #e8edf0;
 
 $shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
 $shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
@@ -23,7 +21,7 @@ $transition: all 0.3s ease;
 .contract-form-page {
     min-height: 100vh;
     background: $bg-page;
-    font-family: 'Poppins', sans-serif;
+    font-family: Inter, ui-sans-serif, system-ui, sans-serif;
     // Supprimé: padding-bottom: 140px; // Espace pour le footer fixe
 
     // ========== PAGE HEADER ==========
@@ -182,7 +180,7 @@ $transition: all 0.3s ease;
 
             &.active {
                 .step-circle {
-                    background: linear-gradient(135deg, $primary 0%, #ffb400 100%);
+                    background: linear-gradient(135deg, $primary 0%, #21836a 100%);
                     color: white;
                     border-color: $primary;
                     box-shadow: 0 4px 12px rgba($primary, 0.4);
@@ -403,7 +401,7 @@ $transition: all 0.3s ease;
             border: 2px solid $border;
             border-radius: 12px;
             font-size: 0.875rem;
-            font-family: 'Poppins', sans-serif;
+            font-family: Inter, ui-sans-serif, system-ui, sans-serif;
             font-weight: 500;
             color: $text-dark;
             background: white;
@@ -433,7 +431,7 @@ $transition: all 0.3s ease;
             border: 2px solid $border;
             border-radius: 12px;
             font-size: 0.875rem;
-            font-family: 'Poppins', sans-serif;
+            font-family: Inter, ui-sans-serif, system-ui, sans-serif;
             font-weight: 500;
             color: $text-dark;
             background: white;
@@ -489,7 +487,7 @@ $transition: all 0.3s ease;
         padding: 1rem 1.5rem;
         border: 2px solid $border;
         border-radius: 12px;
-        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
         transition: $transition;
 
         &:hover {
@@ -526,7 +524,7 @@ $transition: all 0.3s ease;
             height: 0;
 
             &:checked+.slider {
-                background: linear-gradient(135deg, $primary 0%, #ffb400 100%);
+                background: linear-gradient(135deg, $primary 0%, #21836a 100%);
 
                 &:before {
                     transform: translateX(26px);
@@ -594,6 +592,161 @@ $transition: all 0.3s ease;
     display: flex;
     justify-content: flex-end;
   }
+}
+
+// Présentation sobre et cohérente avec le thème Sindik.
+& {
+    --contract-green: #16795f;
+    --contract-green-dark: #135d4b;
+    --contract-ink: #20312d;
+    --contract-muted: #718079;
+    --contract-border: #e3eae6;
+    background: #f5f8f6;
+    color: var(--contract-ink);
+    padding-top: clamp(28px, 4vh, 48px);
+    padding-bottom: 112px;
+
+    .page-header {
+        padding: 1.5rem 2rem 2.75rem;
+        background: linear-gradient(115deg, #176b56, #21846b);
+        box-shadow: none;
+
+        &::before { display: none; }
+
+        .header-content { max-width: 1040px; gap: 1rem; }
+        .btn-back, .btn-delete {
+            width: 42px;
+            height: 42px;
+            border: 1px solid rgba(255,255,255,.3);
+            border-radius: 10px;
+            background: rgba(255,255,255,.12);
+            backdrop-filter: none;
+            transition: background .18s ease, transform .18s ease;
+            &:hover { background: rgba(255,255,255,.22); transform: translateY(-1px); }
+        }
+        .header-text h1 { font-size: clamp(1.45rem, 2.5vw, 1.8rem); letter-spacing: -.025em; text-shadow: none; }
+        .header-text .subtitle { color: rgba(255,255,255,.82); font-size: .92rem; font-weight: 400; }
+    }
+
+    .stepper-container, .form-container { max-width: 1040px; }
+    .stepper-container { margin-top: -1.35rem; margin-bottom: 1.5rem; }
+    .stepper {
+        padding: 1.1rem 1.5rem;
+        border: 1px solid var(--contract-border);
+        border-radius: 14px;
+        box-shadow: 0 5px 18px rgba(24,49,40,.06);
+        .step { gap: .45rem; }
+        .step-circle {
+            width: 38px; height: 38px; border-width: 1px;
+            font-size: .9rem;
+            &.material-icons { font-size: 20px; }
+        }
+        .step.active .step-circle { background: var(--contract-green); border-color: var(--contract-green); box-shadow: 0 0 0 4px rgba(22,121,95,.12); transform: none; }
+        .step.completed .step-circle { background: #e7f4ee; color: var(--contract-green); border-color: #b9ddcd; }
+        .step.active .step-label, .step.completed .step-label { color: var(--contract-green-dark); }
+        .step-label { font-size: .78rem; font-weight: 600; }
+        .step-line { height: 2px; background: #e6ece8; }
+        .step-line.completed { background: #8fc8ad; }
+    }
+
+    .step-content {
+        padding: clamp(1.35rem, 3vw, 2.25rem);
+        border: 1px solid var(--contract-border);
+        border-radius: 14px;
+        box-shadow: 0 5px 18px rgba(24,49,40,.045);
+        animation-duration: .2s;
+        .step-header {
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--contract-border);
+            .emoji {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 42px;
+                height: 42px;
+                margin: 0 0 .8rem;
+                border-radius: 11px;
+                background: #eaf4ef;
+                color: var(--contract-green);
+                font-size: 23px;
+                animation: none;
+            }
+            h2 { margin-bottom: .35rem; font-size: 1.3rem; letter-spacing: -.02em; }
+            p { color: var(--contract-muted); font-size: .9rem; }
+        }
+    }
+
+    .form-grid { gap: 1.25rem 1.5rem; }
+    .form-group {
+        .form-label { margin-bottom: .5rem; font-size: .82rem; }
+        .form-label .material-icons { font-size: 18px; color: var(--contract-green); }
+        .form-input, .form-select, .form-textarea {
+            box-sizing: border-box;
+            min-height: 44px;
+            padding: .68rem .8rem;
+            border: 1px solid #d7e1db;
+            border-radius: 8px;
+            background: #fff;
+            color: var(--contract-ink);
+            font: inherit;
+            font-size: .9rem;
+            transition: border-color .16s ease, box-shadow .16s ease;
+            &:hover { border-color: #aebfb5; }
+            &:focus { border-color: var(--contract-green); box-shadow: 0 0 0 3px rgba(22,121,95,.12); }
+        }
+        .form-textarea { min-height: 100px; line-height: 1.5; }
+    }
+
+    .contract-info-display .info-card {
+        padding: .75rem 1.25rem;
+        border: 1px solid #dce9e2;
+        border-radius: 10px;
+        background: #f7fbf8;
+        .info-row { padding: .85rem 0; border-color: #e4eee8; }
+        .info-label { color: #56675f; }
+        .info-label .material-icons { color: var(--contract-green); }
+        .info-value { color: var(--contract-ink); font-size: .92rem; }
+    }
+
+    .toggle-field { min-height: 44px; padding: .7rem .9rem; border: 1px solid var(--contract-border); border-radius: 8px; background: #fbfcfb; }
+    .toggle-field .toggle-label { font-size: .82rem; }
+    .form-footer {
+        position: fixed;
+        z-index: 1000;
+        left: 252px;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+        padding: .85rem clamp(20px, calc((100vw - 252px - 1040px) / 2), 72px);
+        border-top: 1px solid var(--contract-border);
+        background: rgba(255,255,255,.96);
+        box-shadow: 0 -8px 24px rgba(24,49,40,.08);
+        backdrop-filter: blur(12px);
+        .footer-content { gap: 1.25rem; }
+        .progress-indicator { flex-direction: column; gap: .45rem; }
+        .step-text { color: var(--contract-muted); font-size: .76rem; font-weight: 600; }
+        .progress-bar { width: min(180px, 100%); height: 4px; overflow: hidden; border-radius: 99px; background: #e7ede9; }
+        .progress-fill { height: 100%; border-radius: inherit; background: var(--contract-green); transition: width .2s ease; }
+    }
+
+    @media (max-width: 768px) {
+        padding-top: 24px;
+        padding-bottom: 112px;
+        .page-header { padding: 1.25rem 1rem 2.3rem; }
+        .stepper { padding: .85rem .5rem; }
+        .stepper .step { width: 25%; }
+        .stepper .step-circle { width: 34px; height: 34px; }
+        .stepper .step-label { max-width: 100%; white-space: normal; line-height: 1.2; }
+        .form-footer { right: 0; bottom: 0; padding: .8rem 1rem; }
+        .form-footer .footer-content { grid-template-columns: 1fr 1fr; }
+        .form-footer .progress-indicator { grid-column: 1 / -1; grid-row: 1; }
+        .form-footer .footer-left { grid-column: 1; grid-row: 2; }
+        .form-footer .footer-right { grid-column: 2; grid-row: 2; }
+    }
+    @media (max-width: 760px) {
+        .form-footer { left: 0; }
+    }
 }
     // ========== RESPONSIVE ==========
     @media (max-width: 1024px) {

@@ -126,7 +126,7 @@ import ToastService from '../../../components/ui/toast/toast.service';
     }
 
     .grid-cols-2 {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .gap-4 {
@@ -134,7 +134,8 @@ import ToastService from '../../../components/ui/toast/toast.service';
     }
 
     .form-group {
-      margin-bottom: 1.5rem;
+      min-width: 0;
+      margin-bottom: 1rem;
     }
 
     .form-label {
@@ -146,19 +147,22 @@ import ToastService from '../../../components/ui/toast/toast.service';
     }
 
     .form-textarea {
+      display: block;
+      box-sizing: border-box;
       width: 100%;
+      max-width: 100%;
       padding: 0.75rem;
       border: 1px solid #e5e7eb;
       border-radius: 0.5rem;
       font-size: 0.875rem;
-      font-family: 'Poppins', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       resize: vertical;
       transition: all 0.2s;
 
       &:focus {
         outline: none;
-        border-color: #ffc312;
-        box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.1);
+        border-color: #176b57;
+        box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.1);
       }
 
       &::placeholder {
@@ -176,6 +180,12 @@ import ToastService from '../../../components/ui/toast/toast.service';
 
     .gap-2 {
       gap: 0.5rem;
+    }
+
+    :host ::ng-deep app-input { display: block; min-width: 0; max-width: 100%; }
+    :host ::ng-deep .modal-body { overflow-x: hidden; }
+    @media (max-width: 560px) {
+      .grid-cols-2 { grid-template-columns: minmax(0, 1fr); }
     }
   `]
 })

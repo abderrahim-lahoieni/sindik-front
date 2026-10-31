@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">Sindik — gestion de résidence</title>
+  <rect width="64" height="64" rx="17" fill="#145b49"/>
+  <path d="M10 50h44v3H10z" fill="#9bcdbb"/>
+  <path d="M12 50V31.5c0-.8.7-1.5 1.5-1.5h9c.8 0 1.5.7 1.5 1.5V50H12Zm13 0V17.5c0-.8.7-1.5 1.5-1.5h11c.8 0 1.5.7 1.5 1.5V50H25Zm15 0V27.5c0-.8.7-1.5 1.5-1.5h9c.8 0 1.5.7 1.5 1.5V50H40Z" fill="#f5faf7"/>
+  <path d="M16 35h4v4h-4zm0 8h4v4h-4zm13-22h4v4h-4zm7 0h4v4h-4zm-7 8h4v4h-4zm7 0h4v4h-4zm-7 8h4v4h-4zm7 0h4v4h-4zm11-6h4v4h-4zm0 8h4v4h-4z" fill="#145b49"/>
+  <path d="M31 43h5v7h-5z" fill="#c6a86b"/>
+</svg>

@@ -196,7 +196,7 @@ import { Resident } from '../../../admin/residents/access-data/resident.model';
       letter-spacing: 0.5px;
       margin: 1.5rem 0 1rem 0;
       padding-bottom: 0.5rem;
-      border-bottom: 2px solid #ffc312;
+      border-bottom: 2px solid #176b57;
     }
 
     .grid {
@@ -238,15 +238,15 @@ import { Resident } from '../../../admin/residents/access-data/resident.model';
       border: 2px solid #e5e7eb;
       border-radius: 0.5rem;
       font-size: 0.875rem;
-      font-family: 'Poppins', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       background: white;
       cursor: pointer;
       transition: all 0.2s;
 
       &:focus {
         outline: none;
-        border-color: #ffc312;
-        box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.1);
+        border-color: #176b57;
+        box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.1);
       }
 
       &:disabled {
@@ -265,7 +265,7 @@ import { Resident } from '../../../admin/residents/access-data/resident.model';
     }
 
     .loading-text {
-      color: #ffc312;
+      color: #176b57;
       font-size: 0.75rem;
       margin-top: 0.25rem;
       font-weight: 500;
@@ -294,13 +294,13 @@ import { Resident } from '../../../admin/residents/access-data/resident.model';
         border: 2px solid #e5e7eb;
         border-radius: 0.5rem;
         font-size: 0.875rem;
-        font-family: 'Poppins', sans-serif;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
         transition: all 0.2s;
 
         &:focus {
           outline: none;
-          border-color: #ffc312;
-          box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.1);
+          border-color: #176b57;
+          box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.1);
         }
       }
     }
@@ -328,14 +328,14 @@ import { Resident } from '../../../admin/residents/access-data/resident.model';
       border: 2px solid #e5e7eb;
       border-radius: 0.5rem;
       font-size: 0.875rem;
-      font-family: 'Poppins', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       resize: vertical;
       transition: all 0.2s;
 
       &:focus {
         outline: none;
-        border-color: #ffc312;
-        box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.1);
+        border-color: #176b57;
+        box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.1);
       }
 
       &::placeholder {

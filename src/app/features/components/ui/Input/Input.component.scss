@@ -1,21 +1,20 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-$primary: #ffc312;
-$primary-dark: #e6af10;
-$primary-light: #ffd54f;
+$primary: #176b57;
+$primary-dark: #125a49;
+$primary-light: #b9e1d2;
 $error: #ff4757;
 $error-light: #ff6b7a;
 $success: #2ecc71;
 $text-dark: #1a1a1a;
-$text-body: #2c3e50;
+$text-body: #344b44;
 $text-muted: #6b7280;
 $border: #e5e7eb;
 $border-hover: #d1d5db;
-$border-focus: #ffc312;
+$border-focus: #176b57;
 $background: #ffffff;
 $background-alt: #f9fafb;
 $shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 $shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-$shadow-focus: 0 0 0 3px rgba(255, 195, 18, 0.12);
+$shadow-focus: 0 0 0 3px rgba(23, 107, 87, 0.12);
 $shadow-error: 0 0 0 3px rgba(255, 71, 87, 0.12);
 $transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 .input-field:disabled,
@@ -82,7 +81,7 @@ $transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       justify-content: center;
       background: $primary;
       border-radius: 8px 0 0 8px;
-      color: $text-dark;
+      color: #fff;
       z-index: 2;
       transition: $transition;
 
@@ -90,7 +89,7 @@ $transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         font-size: 20px;
         width: 20px;
         height: 20px;
-        color: $text-dark;
+        color: #fff;
       }
     }
 
@@ -341,7 +340,10 @@ $transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .input-icon-left {
-      background: $primary-light;
+      background: $primary-dark;
+      color: #fff;
+
+      mat-icon { color: #fff; }
     }
   }
 

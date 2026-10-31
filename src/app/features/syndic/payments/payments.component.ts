@@ -2,6 +2,7 @@
 
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
@@ -16,11 +17,13 @@ import { ButtonComponent } from '../../components/ui/buttons/button.component';
 import { Payment, PaymentFilters, PaymentStatus, PaymentType } from './access-data/payment.model';
 import { RecordPaymentModalComponent } from './modals/record-payment.component';
 import { CreatePaymentModalComponent } from './modals/create-payment.component';
+import { PaymentDetailsModalComponent } from './modals/payment-details.component';
 @Component({
     selector: 'app-syndic-payments',
     standalone: true,
     imports: [
         CommonModule,
+        MatIconModule,
         ReactiveFormsModule,
         TableComponent,
         ButtonComponent
@@ -98,7 +101,7 @@ export class SyndicPaymentsComponent implements OnInit {
                     [PaymentStatus.CANCELLED]: { label: 'Annulé', class: 'badge-cancelled' }
                 };
                 const badge = `<span class="badge ${config[value].class}">${config[value].label}</span>`;
-                const late = row.isLate ? '<span class="late-indicator">⚠️</span>' : '';
+                const late = row.isLate ? '<span class="late-indicator">En retard</span>' : '';
                 return badge + late;
             }
         },
@@ -293,26 +296,11 @@ export class SyndicPaymentsComponent implements OnInit {
     }
 
     viewDetails(payment: Payment): void {
-        const paymentDateStr = payment.paymentDate
-            ? new Date(payment.paymentDate).toLocaleDateString('fr-FR')
-            : 'Non payé';
-
-        this.modal.alert(
-            `Détails du paiement\n\n` +
-            `Référence: ${payment.paymentReference}\n` +
-            `Contrat: ${payment.contractNumber}\n` +
-            `Résident: ${payment.residentName}\n` +
-            `Unité: ${payment.unitNumber} - ${payment.buildingName}\n` +
-            `Type: ${payment.type}\n` +
-            `Statut: ${payment.status}\n` +
-            `Montant: ${payment.amount.toLocaleString('fr-FR')} MAD\n` +
-            `Payé: ${payment.amountPaid.toLocaleString('fr-FR')} MAD\n` +
-            `Restant: ${payment.remainingAmount.toLocaleString('fr-FR')} MAD\n` +
-            `Date échéance: ${new Date(payment.dueDate).toLocaleDateString('fr-FR')}\n` +
-            `Date paiement: ${paymentDateStr}\n` +
-            `En retard: ${payment.isLate ? 'Oui ⚠️' : 'Non'}\n` +
-            `Notes: ${payment.notes || 'Aucune note'}`
-        ).subscribe();
+        this.modal.open(PaymentDetailsModalComponent, {
+            width: '720px',
+            maxWidth: '94vw',
+            data: { payment }
+        });
     }
 
     viewReceipt(payment: Payment): void {

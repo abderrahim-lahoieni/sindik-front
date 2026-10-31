@@ -68,7 +68,7 @@ export interface ConfirmDialogData {
   `,
   styles: [`
     .confirm-dialog {
-      font-family: 'Poppins', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       text-align: center;
       padding: 24px;
     }

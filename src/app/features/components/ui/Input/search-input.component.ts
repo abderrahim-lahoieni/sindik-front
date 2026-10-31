@@ -50,8 +50,8 @@ import { FormsModule } from '@angular/forms';
 
       &:focus {
         outline: none;
-        border-color: #ffc312;
-        box-shadow: 0 0 0 3px rgba(255,195,18,0.1);
+        border-color: #176b57;
+        box-shadow: 0 0 0 3px rgba(23,107,87,0.1);
       }
 
       &::placeholder {

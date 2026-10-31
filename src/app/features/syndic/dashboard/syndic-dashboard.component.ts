@@ -2,6 +2,7 @@
 
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { SyndicBuildingService, SyndicBuilding } from '../access-data/syndic-building.service';
@@ -25,7 +26,7 @@ interface BuildingStats {
 @Component({
   selector: 'app-syndic-dashboard',
   standalone: true,
-  imports: [CommonModule, ButtonComponent],
+  imports: [CommonModule, MatIconModule, ButtonComponent],
   templateUrl: './syndic-dashboard.component.html',
   styleUrls: ['./syndic-dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

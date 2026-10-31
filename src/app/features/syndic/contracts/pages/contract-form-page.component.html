@@ -5,8 +5,8 @@
   <!-- Header -->
   <div class="page-header">
     <div class="header-content">
-      <button class="btn-back" (click)="cancel()">
-        <span class="material-icons">arrow_back</span>
+      <button class="btn-back" type="button" aria-label="Retour aux contrats" (click)="cancel()">
+        <mat-icon aria-hidden="true">arrow_back</mat-icon>
       </button>
       <div class="header-text">
         <h1>{{ pageTitle }}</h1>
@@ -19,8 +19,10 @@
       <button 
         *ngIf="mode() === 'edit'" 
         class="btn-delete"
+        type="button"
+        aria-label="Supprimer le contrat"
         (click)="confirmDelete()">
-        <span class="material-icons">delete</span>
+        <mat-icon aria-hidden="true">delete</mat-icon>
       </button>
     </div>
   </div>
@@ -102,7 +104,7 @@
           <!-- Mode CREATE: Localisation -->
           <div *ngIf="mode() === 'create'">
             <div class="step-header">
-              <span class="emoji">🏢</span>
+              <mat-icon class="emoji" aria-hidden="true">apartment</mat-icon>
               <h2>Sélectionnez la localisation</h2>
               <p>Choisissez le bâtiment, l'unité et le résident pour ce contrat</p>
             </div>
@@ -169,7 +171,7 @@
           <!-- Mode EDIT: Info contrat -->
           <div *ngIf="mode() === 'edit' && contract()">
             <div class="step-header">
-              <span class="emoji">📋</span>
+              <mat-icon class="emoji" aria-hidden="true">checklist</mat-icon>
               <h2>Informations du contrat</h2>
               <p>Contrat N° {{ contract()?.contractNumber }}</p>
             </div>
@@ -234,7 +236,7 @@
         <!-- STEP 2: Informations (Create) / Période (Edit) -->
         <div class="step-content" *ngIf="currentStep() === 2">
           <div class="step-header">
-            <span class="emoji">📄</span>
+            <mat-icon class="emoji" aria-hidden="true">description</mat-icon>
             <h2>{{ mode() === 'create' ? 'Informations du contrat' : 'Période du contrat' }}</h2>
             <p>{{ mode() === 'create' ? 'Définissez le type, le statut et la période du contrat' : 'Modifiez les dates du contrat' }}</p>
           </div>
@@ -298,7 +300,7 @@
         <!-- STEP 3: Financier -->
         <div class="step-content" *ngIf="currentStep() === 3">
           <div class="step-header">
-            <span class="emoji">💰</span>
+            <mat-icon class="emoji" aria-hidden="true">payments</mat-icon>
             <h2>Informations financières</h2>
             <p>Définissez les montants et la fréquence de paiement</p>
           </div>
@@ -385,7 +387,7 @@
         <!-- STEP 4: Options -->
         <div class="step-content" *ngIf="currentStep() === 4">
           <div class="step-header">
-            <span class="emoji">⚙️</span>
+            <mat-icon class="emoji" aria-hidden="true">settings</mat-icon>
             <h2>Options et notes</h2>
             <p>Configurez les options de renouvellement et ajoutez des notes</p>
           </div>

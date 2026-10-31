@@ -4,10 +4,18 @@
   <aside class="sidebar">
     <!-- Logo Section -->
     <div class="logo-section" [class.collapsed]="!sidebarOpen()">
+      <button
+        *ngIf="sidebarOpen()"
+        mat-icon-button
+        class="mobile-close-btn"
+        aria-label="Fermer le menu latéral"
+        (click)="toggleSidebar()">
+        <mat-icon aria-hidden="true">close</mat-icon>
+      </button>
       <div class="logo">
-        <img src="logo_sindik.png" alt="Logo">
+        <img src="sindik-mark.svg" alt="Logo Sindik">
       </div>
-      <h2 class="brand-name" *ngIf="sidebarOpen()">Sindik</h2>
+      <h2 class="brand-name" *ngIf="sidebarOpen()">Sindik<small>GESTION DE RÉSIDENCE</small></h2>
     </div>
 
     <!-- Navigation Menu -->
@@ -19,9 +27,11 @@
             routerLinkActive="active"
             [routerLinkActiveOptions]="{ exact: true }"
             class="menu-link"
+            [attr.title]="!sidebarOpen() ? item.label : null"
+            [attr.aria-label]="!sidebarOpen() ? item.label : null"
           >
             <span class="icon-wrapper">
-              <mat-icon>{{ item.icon }}</mat-icon>
+              <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
             </span>
             <span class="menu-label" *ngIf="sidebarOpen()">{{ item.label }}</span>
             <span class="active-indicator"></span>
@@ -32,9 +42,17 @@
 
     <!-- Sidebar Footer -->
     <div class="sidebar-footer" *ngIf="sidebarOpen()">
-      <p class="copyright">©Sindik {{ currentYear }} All Rights Reserved</p>
+      <p class="copyright">© {{ currentYear }} Sindik · Gestion de résidence</p>
     </div>
   </aside>
+
+  <button
+    type="button"
+    class="sidebar-backdrop"
+    [class.visible]="sidebarOpen()"
+    (click)="toggleSidebar()"
+    aria-label="Fermer le menu latéral">
+  </button>
 
   <!-- Main Content Area -->
   <main class="main-content">
@@ -46,19 +64,64 @@
         <button
           mat-icon-button
           class="toggle-btn"
+          [attr.aria-label]="sidebarOpen() ? 'Réduire le menu latéral' : 'Ouvrir le menu latéral'"
+          [attr.aria-expanded]="sidebarOpen()"
           (click)="toggleSidebar()"
         >
-          <mat-icon>{{ sidebarOpen() ? 'menu_open' : 'menu' }}</mat-icon>
+          <mat-icon aria-hidden="true">{{ sidebarOpen() ? 'menu_open' : 'menu' }}</mat-icon>
         </button>
 
         <!-- Search Bar -->
-        <div class="search-container">
-          <mat-icon class="search-icon">search</mat-icon>
+        <div class="search-container" [class.search-open]="searchOpen()">
+          <mat-icon class="search-icon" aria-hidden="true">search</mat-icon>
           <input
+            #navbarSearch
             type="text"
-            placeholder="Rechercher..."
+            placeholder="Rechercher une page..."
             class="search-input"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-controls="navbar-search-results"
+            [attr.aria-expanded]="searchOpen() && !!searchQuery().trim()"
+            [value]="searchQuery()"
+            (input)="onSearchInput(navbarSearch.value)"
+            (focus)="searchOpen.set(true)"
+            (keydown)="onSearchKeydown($event)"
           >
+          <button
+            *ngIf="searchQuery()"
+            type="button"
+            class="search-clear"
+            aria-label="Effacer la recherche"
+            (click)="clearSearch(navbarSearch)">
+            <mat-icon aria-hidden="true">close</mat-icon>
+          </button>
+
+          <div
+            *ngIf="searchOpen() && searchQuery().trim()"
+            id="navbar-search-results"
+            class="search-results"
+            role="listbox"
+            aria-label="Pages accessibles">
+            <div class="search-results-title">Pages accessibles</div>
+            <button
+              *ngFor="let item of searchResults(); let i = index"
+              type="button"
+              class="search-result"
+              role="option"
+              [attr.aria-selected]="activeSearchIndex() === i"
+              [class.active]="activeSearchIndex() === i"
+              (mouseenter)="activeSearchIndex.set(i)"
+              (click)="navigateTo(item)">
+              <span class="result-icon"><mat-icon aria-hidden="true">{{ item.icon }}</mat-icon></span>
+              <span class="result-label">{{ item.label }}</span>
+              <mat-icon class="result-arrow" aria-hidden="true">arrow_outward</mat-icon>
+            </button>
+            <div *ngIf="searchResults().length === 0" class="search-empty">
+              Aucune page accessible ne correspond à « {{ searchQuery() }} ».
+            </div>
+            <div class="search-hint">↑ ↓ sélectionner <span>Entrée ouvrir</span> <span>Échap fermer</span></div>
+          </div>
         </div>
       </div>
 
@@ -75,9 +138,11 @@
             [matMenuTriggerFor]="userMenu"
             class="user-button"
           >
+            <span class="user-identity">
+              <span class="user-name">{{ displayUsername }}</span>
+              <span class="user-role">{{ roleLabel }}</span>
+            </span>
             <mat-icon class="dropdown-icon">keyboard_arrow_down</mat-icon>
-            <mat-icon>person</mat-icon>
-            <span class="user-name">{{username}}({{role}})</span>
           </button>
 
           <mat-menu #userMenu="matMenu" class="user-dropdown" xPosition="before">

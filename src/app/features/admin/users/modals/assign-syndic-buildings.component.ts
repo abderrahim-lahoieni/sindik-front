@@ -150,7 +150,7 @@ interface BuildingOption {
         width: 40px;
         height: 40px;
         border: 3px solid #e2e8f0;
-        border-top-color: #ffc312;
+        border-top-color: #176b57;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
       }
@@ -203,9 +203,9 @@ interface BuildingOption {
             transition: all 0.2s;
 
             &:hover {
-              border-color: #ffc312;
-              color: #ffc312;
-              background: rgba(255, 195, 18, 0.05);
+              border-color: #176b57;
+              color: #176b57;
+              background: rgba(23, 107, 87, 0.05);
             }
           }
         }
@@ -228,13 +228,13 @@ interface BuildingOption {
           transition: all 0.2s;
 
           &:hover {
-            border-color: #ffc312;
-            background: rgba(255, 195, 18, 0.05);
+            border-color: #176b57;
+            background: rgba(23, 107, 87, 0.05);
           }
 
           &.selected {
-            border-color: #ffc312;
-            background: rgba(255, 195, 18, 0.1);
+            border-color: #176b57;
+            background: rgba(23, 107, 87, 0.1);
           }
 
           .building-checkbox {
@@ -242,7 +242,7 @@ interface BuildingOption {
               width: 20px;
               height: 20px;
               cursor: pointer;
-              accent-color: #ffc312;
+              accent-color: #176b57;
             }
           }
 
@@ -265,7 +265,7 @@ interface BuildingOption {
             .status-badge {
               display: inline-block;
               padding: 0.25rem 0.75rem;
-              background: #ffc312;
+              background: #176b57;
               color: white;
               border-radius: 12px;
               font-size: 0.75rem;
@@ -283,7 +283,7 @@ interface BuildingOption {
 
         .summary-text {
           font-weight: 600;
-          color: #ffc312;
+          color: #176b57;
           font-size: 1rem;
         }
       }

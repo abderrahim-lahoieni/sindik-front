@@ -184,7 +184,7 @@ import ToastService from '../../../components/ui/toast/toast.service';
       letter-spacing: 0.5px;
       margin: 1.5rem 0 1rem 0;
       padding-bottom: 0.5rem;
-      border-bottom: 2px solid #ffc312;
+      border-bottom: 2px solid #176b57;
     }
 
     .grid {
@@ -211,7 +211,7 @@ import ToastService from '../../../components/ui/toast/toast.service';
         bottom: -20px;
         left: 0;
         font-size: 0.75rem;
-        color: #ffc312;
+        color: #176b57;
         font-weight: 500;
         animation: pulse 1.5s infinite;
       }
@@ -239,13 +239,13 @@ import ToastService from '../../../components/ui/toast/toast.service';
         border: 1px solid #e5e7eb;
         border-radius: 0.5rem;
         font-size: 0.875rem;
-        font-family: 'Poppins', sans-serif;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
         transition: all 0.2s;
 
         &:focus {
           outline: none;
-          border-color: #ffc312;
-          box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.1);
+          border-color: #176b57;
+          box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.1);
         }
       }
     }
@@ -285,14 +285,14 @@ import ToastService from '../../../components/ui/toast/toast.service';
       border: 1px solid #e5e7eb;
       border-radius: 0.5rem;
       font-size: 0.875rem;
-      font-family: 'Poppins', sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
       resize: vertical;
       transition: all 0.2s;
 
       &:focus {
         outline: none;
-        border-color: #ffc312;
-        box-shadow: 0 0 0 3px rgba(255, 195, 18, 0.1);
+        border-color: #176b57;
+        box-shadow: 0 0 0 3px rgba(23, 107, 87, 0.1);
       }
 
       &::placeholder {

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { merge, Subject } from 'rxjs';
@@ -21,6 +22,7 @@ import {Role} from '../../../core/auth/models/auth.model';
   standalone: true,
   imports: [
     CommonModule,
+    MatIconModule,
     ReactiveFormsModule,
     TableComponent,
     ButtonComponent
